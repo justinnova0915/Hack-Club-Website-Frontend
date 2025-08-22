@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import {
   onAuthStateChanged,
   User,
@@ -12,21 +12,24 @@ import {
 } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+
 interface CustomUser extends User {
   username?: string | null;
   firstName?: string;
   lastName?: string;
   grade?: string;
   skillLevel?: string;
-  bestAt?: string;
-  mostInterested?: string;
+  webDevSkill?: string;
+  gameDevSkill?: string;
+  aiSkill?: string;
   getIdToken: (forceRefresh?: boolean) => Promise<string>;
 }
+
 interface AuthContextType {
   user: CustomUser | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<any>;
-  signUp: (email: string, password: string, username: string, firstName: string, lastName: string, grade: string, skillLevel: string, bestAt: string, mostInterested: string) => Promise<void>;
+  signUp: (email: string, password: string, username: string, firstName: string, lastName: string, grade: string, skillLevel: string, skills: { webDevSkill: string, gameDevSkill: string, aiSkill: string }) => Promise<void>;
   logOut: () => Promise<void>;
   userRole: 'student' | 'mentor' | 'admin' | null;
 }
@@ -61,10 +64,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             lastName: '',
             grade: '',
             skillLevel: '',
-            bestAt: '',
-            mostInterested: '',
+            webDevSkill: '',
+            gameDevSkill: '',
+            aiSkill: '',
           }, { merge: true });
-          fetchedUserData = { email: currentUser.email, role: 'student', username: defaultUsername, firstName: '', lastName: '', grade: '', skillLevel: '', bestAt: '', mostInterested: '' };
+          fetchedUserData = { email: currentUser.email, role: 'student', username: defaultUsername, firstName: '', lastName: '', grade: '', skillLevel: '', webDevSkill: '', gameDevSkill: '', aiSkill: '' };
           console.log("Created missing user document in 'users' collection.");
         }
         setUserRole(role);
@@ -76,8 +80,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const currentLastName = publicProfileSnap.exists() ? publicProfileSnap.data().lastName : (fetchedUserData.lastName || '');
         const currentGrade = publicProfileSnap.exists() ? publicProfileSnap.data().grade : (fetchedUserData.grade || '');
         const currentSkillLevel = publicProfileSnap.exists() ? publicProfileSnap.data().skillLevel : (fetchedUserData.skillLevel || '');
-        const currentBestAt = publicProfileSnap.exists() ? publicProfileSnap.data().bestAt : (fetchedUserData.bestAt || '');
-        const currentMostInterested = publicProfileSnap.exists() ? publicProfileSnap.data().mostInterested : (fetchedUserData.mostInterested || '');
+        const currentWebDevSkill = publicProfileSnap.exists() ? publicProfileSnap.data().webDevSkill : (fetchedUserData.webDevSkill || '');
+        const currentGameDevSkill = publicProfileSnap.exists() ? publicProfileSnap.data().gameDevSkill : (fetchedUserData.gameDevSkill || '');
+        const currentAiSkill = publicProfileSnap.exists() ? publicProfileSnap.data().aiSkill : (fetchedUserData.aiSkill || '');
         const currentEmail = publicProfileSnap.exists() ? publicProfileSnap.data().email : (fetchedUserData.email || currentUser.email || '');
 
         if (!publicProfileSnap.exists() ||
@@ -88,8 +93,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             publicProfileSnap.data().lastName !== currentLastName ||
             publicProfileSnap.data().grade !== currentGrade ||
             publicProfileSnap.data().skillLevel !== currentSkillLevel ||
-            publicProfileSnap.data().bestAt !== currentBestAt ||
-            publicProfileSnap.data().mostInterested !== currentMostInterested
+            publicProfileSnap.data().webDevSkill !== currentWebDevSkill ||
+            publicProfileSnap.data().gameDevSkill !== currentGameDevSkill ||
+            publicProfileSnap.data().aiSkill !== currentAiSkill
             ) {
           await setDoc(publicProfileRef, {
             username: currentUsername,
@@ -100,8 +106,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             lastName: currentLastName,
             grade: currentGrade,
             skillLevel: currentSkillLevel,
-            bestAt: currentBestAt,
-            mostInterested: currentMostInterested,
+            webDevSkill: currentWebDevSkill,
+            gameDevSkill: currentGameDevSkill,
+            aiSkill: currentAiSkill,
           }, { merge: true });
           console.log("Created/Updated public_profile document.");
         }
@@ -112,8 +119,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           lastName: currentLastName,
           grade: currentGrade,
           skillLevel: currentSkillLevel,
-          bestAt: currentBestAt,
-          mostInterested: currentMostInterested,
+          webDevSkill: currentWebDevSkill,
+          gameDevSkill: currentGameDevSkill,
+          aiSkill: currentAiSkill,
           getIdToken: currentUser.getIdToken.bind(currentUser),
         };
 
@@ -128,6 +136,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     return () => unsubscribe();
   }, []);
+
   const signIn = async (email: string, password: string) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
@@ -144,18 +153,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         ...userCredential,
         role: userData.role,
         firstName: userData.firstName,
-
         lastName: userData.lastName,
         grade: userData.grade,
         skillLevel: userData.skillLevel,
-        bestAt: userData.bestAt,
-        mostInterested: userData.mostInterested,
+        webDevSkill: userData.webDevSkill,
+        gameDevSkill: userData.gameDevSkill,
+        aiSkill: userData.aiSkill,
       };
     }
 
     return userCredential;
   };
-  const signUp = async (email: string, password: string, username: string, firstName: string, lastName: string, grade: string, skillLevel: string, bestAt: string, mostInterested: string) => {
+
+  const signUp = async (
+    email: string,
+    password: string,
+    username: string,
+    firstName: string,
+    lastName: string,
+    grade: string,
+    skillLevel: string,
+    skills: { webDevSkill: string, gameDevSkill: string, aiSkill: string }
+  ) => {
       console.log("signUp function started");
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       console.log("User created in Firebase Auth:", userCredential.user.uid);
@@ -177,6 +196,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           firstName: firstName,
           lastName: lastName,
           grade: grade,
+          skillLevel: skillLevel,
+          ...skills, // Spread the new skills object here
       });
       console.log("Public profile document created in Firestore 'public_profiles' collection");
       await setDoc(doc(db, 'applications', currentUser.uid), {
@@ -186,8 +207,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           lastName: lastName,
           grade: grade,
           skillLevel: skillLevel,
-          bestAt: bestAt,
-          mostInterested: mostInterested,
+          ...skills, // Spread the new skills object here
       });
       console.log("Application document created in Firestore 'applications' collection");
       await sendEmailVerification(currentUser);
@@ -195,6 +215,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       await signOut(auth);
       console.log("User signed out pending email verification.");
   };
+
   const logOut = async () => {
     await signOut(auth);
     window.location.href = '/';

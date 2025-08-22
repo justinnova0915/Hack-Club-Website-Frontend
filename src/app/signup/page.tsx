@@ -16,8 +16,9 @@ export default function SignUpPage() {
   const [lastName, setLastName] = useState('');
   const [grade, setGrade] = useState('');
   const [skillLevel, setSkillLevel] = useState('');
-  const [bestAt, setBestAt] = useState('');
-  const [mostInterested, setMostInterested] = useState('');
+  const [webDevSkill, setWebDevSkill] = useState('');
+  const [gameDevSkill, setGameDevSkill] = useState('');
+  const [aiSkill, setAiSkill] = useState('');
 
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [step, setStep] = useState(1);
@@ -35,8 +36,9 @@ export default function SignUpPage() {
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [gradeError, setGradeError] = useState('');
   const [skillLevelError, setSkillLevelError] = useState('');
-  const [bestAtError, setBestAtError] = useState('');
-  const [mostInterestedError, setMostInterestedError] = useState('');
+  const [webDevSkillError, setWebDevSkillError] = useState('');
+  const [gameDevSkillError, setGameDevSkillError] = useState('');
+  const [aiSkillError, setAiSkillError] = useState('');
   const [showTerminal, setShowTerminal] = useState(false);
   const [terminalMessages, setTerminalMessages] = useState<string[]>([]);
   const [typedMessage, setTypedMessage] = useState('');
@@ -48,6 +50,8 @@ export default function SignUpPage() {
 
   const router = useRouter();
   const { signUp, user } = useAuth();
+
+  // Redirect if user is already authenticated
   useEffect(() => {
     if (user) {
       console.log('User is logged in and verified, redirecting to dashboard.');
@@ -56,15 +60,21 @@ export default function SignUpPage() {
   }, [user, router]);
 
   const formRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to top of form on step change
   useEffect(() => {
     if (formRef.current) {
       formRef.current.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [step]);
+
+  // Regex for email validation
   const validateEmail = (email: string) => {
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
   };
+
+  // Field validation handler
   const handleValidation = (field: string) => {
     switch (field) {
       case 'firstName':
@@ -91,16 +101,21 @@ export default function SignUpPage() {
       case 'skillLevel':
         setSkillLevelError(skillLevel.trim() === '' ? 'Your skill level is required.' : '');
         break;
-      case 'bestAt':
-        setBestAtError(bestAt.trim() === '' ? 'This field is required.' : '');
+      case 'webDevSkill':
+        setWebDevSkillError(webDevSkill.trim() === '' ? 'This field is required.' : '');
         break;
-      case 'mostInterested':
-        setMostInterestedError(mostInterested.trim() === '' ? 'This field is required.' : '');
+      case 'gameDevSkill':
+        setGameDevSkillError(gameDevSkill.trim() === '' ? 'This field is required.' : '');
+        break;
+      case 'aiSkill':
+        setAiSkillError(aiSkill.trim() === '' ? 'This field is required.' : '');
         break;
       default:
         break;
     }
   };
+
+  // Check if current step is valid to proceed
   const isStepValid = () => {
     switch (step) {
       case 1:
@@ -114,7 +129,8 @@ export default function SignUpPage() {
       case 5:
         return grade.trim() !== '' && skillLevel.trim() !== '';
       case 6:
-        return bestAt.trim() !== '' && mostInterested.trim() !== '';
+        // Updated validation for new skill fields
+        return webDevSkill.trim() !== '' && gameDevSkill.trim() !== '' && aiSkill.trim() !== '';
       default:
         return true;
     }
@@ -146,8 +162,10 @@ export default function SignUpPage() {
           handleValidation('skillLevel');
           break;
         case 6:
-          handleValidation('bestAt');
-          handleValidation('mostInterested');
+          // Updated validation calls for new skill fields
+          handleValidation('webDevSkill');
+          handleValidation('gameDevSkill');
+          handleValidation('aiSkill');
           break;
         default:
           break;
@@ -161,6 +179,8 @@ export default function SignUpPage() {
     setAnimationDirection('backward');
     setStep(step - 1);
   };
+
+  // Terminal compilation steps for animation
   const compilationSteps = useMemo(() => ([
     '> Initializing Hack Club registration protocols...',
     '> Verifying credentials... [ OK ]',
@@ -171,6 +191,8 @@ export default function SignUpPage() {
     '> Sending verification email to your address...',
     '> Registration complete. Please check your inbox to verify your account.'
   ]), [username]);
+
+  // Cleanup for timeout
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
@@ -179,40 +201,40 @@ export default function SignUpPage() {
     };
   }, []);
 
+  // Typewriter effect for terminal animation
   useEffect(() => {
-      if (showTerminal) {
-          let messageIndex = 0;
-          let charIndex = 0;
+    if (showTerminal) {
+      let messageIndex = 0;
+      let charIndex = 0;
 
-          const typeWriterEffect = () => {
-              if (messageIndex < compilationSteps.length) {
-                  if (charIndex < compilationSteps[messageIndex].length) {
-                      setTypedMessage(prev => prev + compilationSteps[messageIndex].charAt(charIndex));
-                      charIndex++;
-                      timeoutRef.current = setTimeout(typeWriterEffect, 10);
-                  } else {
-                      setTerminalMessages(prev => [...prev, compilationSteps[messageIndex]]);
-                      setTypedMessage('');
-                      messageIndex++;
-                      charIndex = 0;
-                      timeoutRef.current = setTimeout(typeWriterEffect, 1000);
-                  }
-              } else {
-                  setIsAnimationComplete(true);
-                  setFinalMessage('Please check your email to verify your account and complete your registration. You can close this window.');
-                  console.log("Terminal animation completed");
-              }
-          };
-          if (timeoutRef.current) {
-              clearTimeout(timeoutRef.current);
+      const typeWriterEffect = () => {
+        if (messageIndex < compilationSteps.length) {
+          if (charIndex < compilationSteps[messageIndex].length) {
+            setTypedMessage(prev => prev + compilationSteps[messageIndex].charAt(charIndex));
+            charIndex++;
+            timeoutRef.current = setTimeout(typeWriterEffect, 10);
+          } else {
+            setTerminalMessages(prev => [...prev, compilationSteps[messageIndex]]);
+            setTypedMessage('');
+            messageIndex++;
+            charIndex = 0;
+            timeoutRef.current = setTimeout(typeWriterEffect, 1000);
           }
-          setTerminalMessages([]);
-          setTypedMessage('');
-          setIsAnimationComplete(false);
-          typeWriterEffect();
+        } else {
+          setIsAnimationComplete(true);
+          setFinalMessage('Please check your email to verify your account and complete your registration. You can close this window.');
+          console.log("Terminal animation completed");
+        }
+      };
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
+      setTerminalMessages([]);
+      setTypedMessage('');
+      setIsAnimationComplete(false);
+      typeWriterEffect();
+    }
   }, [showTerminal, compilationSteps]);
-
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -222,40 +244,42 @@ export default function SignUpPage() {
     setFinalMessage(null);
 
     if (!agreeToTerms) {
-        setError('You must agree to the Code of Conduct.');
-        console.error("User did not agree to terms");
-        return;
+      setError('You must agree to the Code of Conduct.');
+      console.error("User did not agree to terms");
+      return;
     }
 
     setIsProcessing(true);
     setShowTerminal(true);
 
     try {
-        console.log("Calling signUp function");
-        await signUp(email, password, username, firstName, lastName, grade, skillLevel, bestAt, mostInterested);
-        console.log("signUp function completed successfully");
+      console.log("Calling signUp function");
+      // Passing new skill states to the signUp function
+      await signUp(email, password, username, firstName, lastName, grade, skillLevel, { webDevSkill, gameDevSkill, aiSkill });
+      console.log("signUp function completed successfully");
 
-        // ADDED: Call the sendEmail function to send a welcome email
-        setIsSendingEmail(true);
-        console.log("Attempting to send welcome email...");
-        const emailSent = await sendEmail('welcome', {
-          email: email,
-          name: firstName, // Using first name for a personal touch
-        });
+      // Call the sendEmail function to send a welcome email
+      setIsSendingEmail(true);
+      console.log("Attempting to send welcome email...");
+      const emailSent = await sendEmail('welcome', {
+        email: email,
+        name: firstName,
+      });
 
-        if (emailSent) {
-          console.log("Welcome email sent successfully.");
-        } else {
-          console.error("Failed to send welcome email.");
-        }
-        setIsSendingEmail(false);
+      if (emailSent) {
+        console.log("Welcome email sent successfully.");
+      } else {
+        console.error("Failed to send welcome email.");
+      }
+      setIsSendingEmail(false);
     } catch (err: any) {
-        console.error("Error during signup:", err.message);
-        setError(err.message);
-        setShowTerminal(false);
-        setIsProcessing(false);
+      console.error("Error during signup:", err.message);
+      setError(err.message);
+      setShowTerminal(false);
+      setIsProcessing(false);
     }
   };
+
   if (user) {
     return null;
   }
@@ -268,6 +292,16 @@ export default function SignUpPage() {
     { id: 5, name: 'Academic Info', description: 'Tell us a bit about your school.', icon: GraduationCap },
     { id: 6, name: 'Skills & Interests', description: 'What you know and want to learn.', icon: ClipboardList },
     { id: 7, name: 'Final Step', description: 'Agree and complete registration.', icon: Send },
+  ];
+
+  const skillOptions = [
+    { value: '', label: 'Select your proficiency' },
+    { value: 'no idea', label: 'No idea what that is' },
+    { value: 'beginner', label: 'I\'m a beginner' },
+    { value: 'intermediate', label: 'I know some basics' },
+    { value: 'proficient', label: 'I\'m proficient' },
+    { value: 'expert', label: 'I am an expert' },
+    { value: 'master', label: 'I have mastered it' },
   ];
 
   const renderProgressColumn = () => (
@@ -445,7 +479,7 @@ export default function SignUpPage() {
                     <select
                       className={`w-full pl-14 pr-8 py-4 bg-gray-600 rounded-lg text-white text-xl focus:outline-none transition duration-200 border-2 appearance-none ${skillLevelError ? 'border-red-500' : 'border-gray-500'} focus:border-indigo-500 focus:ring-indigo-500`}
                       id="skillLevel" value={skillLevel} onChange={(e) => setSkillLevel(e.target.value)} onBlur={() => handleValidation('skillLevel')} required>
-                      <option value="" disabled>Select your skill level</option>
+                      <option value="" disabled hidden>Select your skill level</option>
                       <option value="beginner">Beginner</option>
                       <option value="intermediate">Intermediate</option>
                       <option value="advanced">Advanced</option>
@@ -467,31 +501,73 @@ export default function SignUpPage() {
         case 6:
           return (
             <>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-indigo-300">What are you passionate about?</h2>
-              <p className="text-lg text-gray-400 mb-10">Let us know what you're good at and what you want to learn.</p>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-indigo-300">Your areas of interest.</h2>
+              <p className="text-lg text-gray-400 mb-10">Tell us about your proficiency in a few key areas.</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+                {/* Web Dev Dropdown */}
                 <div className="relative">
-                  <label className="block text-gray-300 text-lg font-semibold mb-3" htmlFor="bestAt">What are you best at?</label>
+                  <label className="block text-gray-300 text-lg font-semibold mb-3" htmlFor="webDevSkill">Web Dev (React, HTML, CSS, JS)</label>
                   <div className="relative flex items-center">
-                    <input
-                      className={`w-full pl-14 pr-8 py-4 bg-gray-600 rounded-lg text-white text-xl focus:outline-none transition duration-200 border-2 ${bestAtError ? 'border-red-500' : 'border-gray-500'} focus:border-indigo-500 focus:ring-indigo-500`}
-                      id="bestAt" type="text" placeholder="JavaScript, Python, UI/UX" value={bestAt} onChange={(e) => setBestAt(e.target.value)} onBlur={() => handleValidation('bestAt')} required />
+                    <select
+                      className={`w-full pl-14 pr-8 py-4 bg-gray-600 rounded-lg text-white text-xl focus:outline-none transition duration-200 border-2 appearance-none ${webDevSkillError ? 'border-red-500' : 'border-gray-500'} focus:border-indigo-500 focus:ring-indigo-500`}
+                      id="webDevSkill" value={webDevSkill} onChange={(e) => setWebDevSkill(e.target.value)} onBlur={() => handleValidation('webDevSkill')} required>
+                      {skillOptions.map(option => (
+                        <option key={option.value} value={option.value} disabled={option.value === ''} hidden={option.value === ''}>{option.label}</option>
+                      ))}
+                    </select>
                     <Code className="absolute left-5 text-gray-400" size={24} />
+                    <div className="absolute right-5 text-gray-400 pointer-events-none">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </div>
                   </div>
-                  {bestAtError && (
-                    <p className="text-red-400 text-sm italic mt-2">{bestAtError}</p>
+                  {webDevSkillError && (
+                    <p className="text-red-400 text-sm italic mt-2">{webDevSkillError}</p>
                   )}
                 </div>
+                {/* Game Dev Dropdown */}
                 <div className="relative">
-                  <label className="block text-gray-300 text-lg font-semibold mb-3" htmlFor="mostInterested">What do you want to learn most?</label>
+                  <label className="block text-gray-300 text-lg font-semibold mb-3" htmlFor="gameDevSkill">Game Dev (in general & w/ Godot)</label>
                   <div className="relative flex items-center">
-                    <input
-                      className={`w-full pl-14 pr-8 py-4 bg-gray-600 rounded-lg text-white text-xl focus:outline-none transition duration-200 border-2 ${mostInterestedError ? 'border-red-500' : 'border-gray-500'} focus:border-indigo-500 focus:ring-indigo-500`}
-                      id="mostInterested" type="text" placeholder="Machine Learning, Game Dev, Web3" value={mostInterested} onChange={(e) => setMostInterested(e.target.value)} onBlur={() => handleValidation('mostInterested')} required />
+                    <select
+                      className={`w-full pl-14 pr-8 py-4 bg-gray-600 rounded-lg text-white text-xl focus:outline-none transition duration-200 border-2 appearance-none ${gameDevSkillError ? 'border-red-500' : 'border-gray-500'} focus:border-indigo-500 focus:ring-indigo-500`}
+                      id="gameDevSkill" value={gameDevSkill} onChange={(e) => setGameDevSkill(e.target.value)} onBlur={() => handleValidation('gameDevSkill')} required>
+                      {skillOptions.map(option => (
+                        <option key={option.value} value={option.value} disabled={option.value === ''} hidden={option.value === ''}>{option.label}</option>
+                      ))}
+                    </select>
                     <Lightbulb className="absolute left-5 text-gray-400" size={24} />
+                    <div className="absolute right-5 text-gray-400 pointer-events-none">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </div>
                   </div>
-                  {mostInterestedError && (
-                    <p className="text-red-400 text-sm italic mt-2">{mostInterestedError}</p>
+                  {gameDevSkillError && (
+                    <p className="text-red-400 text-sm italic mt-2">{gameDevSkillError}</p>
+                  )}
+                </div>
+                {/* AI Dropdown */}
+                <div className="relative">
+                  <label className="block text-gray-300 text-lg font-semibold mb-3" htmlFor="aiSkill">AI (AI structures & PyTorch)</label>
+                  <div className="relative flex items-center">
+                    <select
+                      className={`w-full pl-14 pr-8 py-4 bg-gray-600 rounded-lg text-white text-xl focus:outline-none transition duration-200 border-2 appearance-none ${aiSkillError ? 'border-red-500' : 'border-gray-500'} focus:border-indigo-500 focus:ring-indigo-500`}
+                      id="aiSkill" value={aiSkill} onChange={(e) => setAiSkill(e.target.value)} onBlur={() => handleValidation('aiSkill')} required>
+                      {skillOptions.map(option => (
+                        <option key={option.value} value={option.value} disabled={option.value === ''} hidden={option.value === ''}>{option.label}</option>
+                      ))}
+                    </select>
+                    <Lightbulb className="absolute left-5 text-gray-400" size={24} />
+                    <div className="absolute right-5 text-gray-400 pointer-events-none">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                  </div>
+                  {aiSkillError && (
+                    <p className="text-red-400 text-sm italic mt-2">{aiSkillError}</p>
                   )}
                 </div>
               </div>
@@ -520,9 +596,9 @@ export default function SignUpPage() {
                 className={`w-full text-white text-xl font-bold py-5 px-12 rounded-lg focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 transition-all duration-300 transform shadow-lg disabled:opacity-50 disabled:cursor-not-allowed
                   ${agreeToTerms ? 'bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 hover:scale-105' : 'bg-gray-700 cursor-not-allowed'}`}
                 type="submit"
-                disabled={isProcessing || isSendingEmail || !agreeToTerms} // ADDED: Disable button while email is sending
+                disabled={isProcessing || isSendingEmail || !agreeToTerms}
               >
-                {isSendingEmail ? 'Sending Email...' : 'Register Account'} {/* ADDED: Dynamic button text */}
+                {isSendingEmail ? 'Sending Email...' : 'Register Account'}
               </button>
             </form>
           );
@@ -606,7 +682,7 @@ export default function SignUpPage() {
             <div className="w-4 h-4 bg-green-500 rounded-full" />
           </div>
           <p className="font-semibold text-sm text-gray-400">Hack Club Sign-up</p>
-          <div className="w-10"></div> 
+          <div className="w-10"></div>
         </div>
         {showTerminal ? (
           <div className="flex w-full flex-grow rounded-b-2xl">
