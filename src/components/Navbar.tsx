@@ -46,7 +46,7 @@ export default function Navbar() {
           <div className="hidden lg:flex flex-1 justify-center items-center px-4">
             <div className="flex items-center space-x-2 lg:space-x-4">
               <Link href="#about" className="text-gray-300 hover:bg-gray-700 hover:text-[var(--color-accent-blue)] px-3 py-2 rounded-md text-sm lg:text-xl xl:text-2xl font-bold transition duration-200">About Us</Link>
-              <Link href="#what-youll-learn" className="text-gray-300 hover:bg-gray-700 hover:text-[var(--color-accent-blue)] px-3 py-2 rounded-md text-sm lg:text-xl xl:text-2xl font-bold transition duration-200">What You'll Learn</Link>
+              <Link href="#learn" className="text-gray-300 hover:bg-gray-700 hover:text-[var(--color-accent-blue)] px-3 py-2 rounded-md text-sm lg:text-xl xl:text-2xl font-bold transition duration-200">What You'll Learn</Link>
               <Link href="#faq" className="text-gray-300 hover:bg-gray-700 hover:text-[var(--color-accent-blue)] px-3 py-2 rounded-md text-sm lg:text-xl xl:text-2xl font-bold transition duration-200">FAQ</Link>
               <Link href="#mentors" className="text-gray-300 hover:bg-gray-700 hover:text-[var(--color-accent-blue)] px-3 py-2 rounded-md text-sm lg:text-xl xl:text-2xl font-bold transition duration-200">Mentors</Link>
             </div>
@@ -151,7 +151,7 @@ export default function Navbar() {
               {isLandingPage ? (
                 <>
                   <Link href="#about" onClick={() => setIsMenuOpen(false)} className="block text-gray-300 hover:bg-gray-700 hover:text-[var(--color-accent-blue)] px-3 py-2 rounded-md text-base font-medium">About Us</Link>
-                  <Link href="#what-youll-learn" onClick={() => setIsMenuOpen(false)} className="block text-gray-300 hover:bg-gray-700 hover:text-[var(--color-accent-blue)] px-3 py-2 rounded-md text-base font-medium">What You'll Learn</Link>
+                  <Link href="#learn" onClick={() => setIsMenuOpen(false)} className="block text-gray-300 hover:bg-gray-700 hover:text-[var(--color-accent-blue)] px-3 py-2 rounded-md text-base font-medium">What You'll Learn</Link>
                   <Link href="#faq" onClick={() => setIsMenuOpen(false)} className="block text-gray-300 hover:bg-gray-700 hover:text-[var(--color-accent-blue)] px-3 py-2 rounded-md text-base font-medium">FAQ</Link>
                   <Link href="#mentors" onClick={() => setIsMenuOpen(false)} className="block text-gray-300 hover:bg-gray-700 hover:text-[var(--color-accent-blue)] px-3 py-2 rounded-md text-base font-medium">Mentors</Link>
                   {user ? (

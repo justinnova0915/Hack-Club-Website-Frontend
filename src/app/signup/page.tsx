@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import { User, Mail, Lock, AtSign, ArrowRight, ArrowLeft, CheckCircle, Eye, EyeOff, ClipboardList, GraduationCap, Code, Lightbulb, Send } from 'lucide-react';
+import { sendEmail } from '@/utils/email';
 
 export default function SignUpPage() {
   const [email, setEmail] = useState('');
@@ -41,6 +42,7 @@ export default function SignUpPage() {
   const [typedMessage, setTypedMessage] = useState('');
   const [isAnimationComplete, setIsAnimationComplete] = useState(false);
   const [finalMessage, setFinalMessage] = useState<string | null>(null);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -232,6 +234,21 @@ export default function SignUpPage() {
         console.log("Calling signUp function");
         await signUp(email, password, username, firstName, lastName, grade, skillLevel, bestAt, mostInterested);
         console.log("signUp function completed successfully");
+
+        // ADDED: Call the sendEmail function to send a welcome email
+        setIsSendingEmail(true);
+        console.log("Attempting to send welcome email...");
+        const emailSent = await sendEmail('welcome', {
+          email: email,
+          name: firstName, // Using first name for a personal touch
+        });
+
+        if (emailSent) {
+          console.log("Welcome email sent successfully.");
+        } else {
+          console.error("Failed to send welcome email.");
+        }
+        setIsSendingEmail(false);
     } catch (err: any) {
         console.error("Error during signup:", err.message);
         setError(err.message);
@@ -503,9 +520,9 @@ export default function SignUpPage() {
                 className={`w-full text-white text-xl font-bold py-5 px-12 rounded-lg focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 transition-all duration-300 transform shadow-lg disabled:opacity-50 disabled:cursor-not-allowed
                   ${agreeToTerms ? 'bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 hover:scale-105' : 'bg-gray-700 cursor-not-allowed'}`}
                 type="submit"
-                disabled={isProcessing || !agreeToTerms}
+                disabled={isProcessing || isSendingEmail || !agreeToTerms} // ADDED: Disable button while email is sending
               >
-                Register Account
+                {isSendingEmail ? 'Sending Email...' : 'Register Account'} {/* ADDED: Dynamic button text */}
               </button>
             </form>
           );

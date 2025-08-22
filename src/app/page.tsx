@@ -158,48 +158,6 @@ export default function HomePage() {
       </div>
     );
   }
-  const Navbar = () => (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-[var(--color-primary-dark)] bg-opacity-70 backdrop-filter backdrop-blur-lg shadow-lg">
-      <style>{customStyles}</style>
-      <div className="container mx-auto px-8 py-5 flex justify-between items-center">
-        <Link href="/" className="text-3xl font-bold text-[var(--color-accent-blue)]">
-          Hack Club VMSS
-        </Link>
-        {!isDesktop && (
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-200 focus:outline-none">
-            <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
-            </svg>
-          </button>
-        )}
-        {isDesktop && (
-          <div className="flex space-x-8 items-center">
-            <Link href="#about" className="text-xl text-gray-300 hover:text-[var(--color-accent-blue)] transition-colors duration-200">About Us</Link>
-            <Link href="#what-you'll-learn" className="text-xl text-gray-300 hover:text-[var(--color-accent-blue)] transition-colors duration-200">What You'll Learn</Link>
-            <Link href="#faq" className="text-xl text-gray-300 hover:text-[var(--color-accent-blue)] transition-colors duration-200">FAQ</Link>
-            <Link href="#mentors" className="text-xl text-gray-300 hover:text-[var(--color-accent-blue)] transition-colors duration-200">Mentors</Link>
-            <Link href="/login" className="bg-[var(--color-accent-blue)] hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl text-xl transition duration-200 shadow-lg hover:shadow-xl">Log In</Link>
-          </div>
-        )}
-      </div>
-      <AnimatePresence>
-        {isMenuOpen && !isDesktop && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="flex flex-col items-center bg-[var(--color-primary-dark)] py-4 space-y-4"
-          >
-            <Link href="#about" className="text-xl text-gray-300 hover:text-[var(--color-accent-blue)] transition-colors duration-200" onClick={() => setIsMenuOpen(false)}>About Us</Link>
-            <Link href="#what-you'll-learn" className="text-xl text-gray-300 hover:text-[var(--color-accent-blue)] transition-colors duration-200" onClick={() => setIsMenuOpen(false)}>What You'll Learn</Link>
-            <Link href="#faq" className="text-xl text-gray-300 hover:text-[var(--color-accent-blue)] transition-colors duration-200" onClick={() => setIsMenuOpen(false)}>FAQ</Link>
-            <Link href="#mentors" className="text-xl text-gray-300 hover:text-[var(--color-accent-blue)] transition-colors duration-200" onClick={() => setIsMenuOpen(false)}>Mentors</Link>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </nav>
-  );
 
   return (
     <div className="min-h-screen bg-[var(--color-primary-dark)] text-[var(--color-primary-light)] flex flex-col relative">
@@ -240,7 +198,7 @@ export default function HomePage() {
                 <Link href="/signup" className="bg-[var(--color-accent-blue)] hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full text-lg transition duration-200 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
                   Get Started - Sign Up!
                 </Link>
-                <Link href="#what-you'll-learn" className="bg-[var(--color-secondary-dark)] hover:bg-gray-700 text-gray-300 font-bold py-3 px-6 rounded-full text-lg transition duration-200 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 flex items-center">
+                <Link href="#learn" className="bg-[var(--color-secondary-dark)] hover:bg-gray-700 text-gray-300 font-bold py-3 px-6 rounded-full text-lg transition duration-200 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 flex items-center">
                   Learn More
                   <ChevronRight size={24} className="ml-2" />
                 </Link>
@@ -346,7 +304,7 @@ export default function HomePage() {
             </div>
           </div>
         </section>
-        <section id="what-you'll-learn" className="py-20 md:py-32 bg-[var(--color-primary-dark)] text-[var(--color-primary-light)]">
+        <section id="learn" className="py-20 md:py-32 bg-[var(--color-primary-dark)] text-[var(--color-primary-light)]">
           <div className="container mx-auto px-8 md:px-16 text-center">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
