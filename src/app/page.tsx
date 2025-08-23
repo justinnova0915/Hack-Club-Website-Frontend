@@ -76,9 +76,9 @@ export default function HomePage() {
     {
       title: "Web Development",
       icon: Code,
-      content: `Ever wonder how websites like this are made? We'll start with the fundamentals. You'll learn how to structure content with HTML, make it beautiful with CSS, and add interactivity with JavaScript. No prior experience is needed! We'll start by building a simple interactive button and then progress to modern frameworks like React and Next.js so you can build dynamic, powerful web applications.`,
+      content: `Ever wonder how websites like this are made? You'll learn how to structure content with HTML, make it beautiful with CSS, and add interactivity with JavaScript. No prior experience is needed! We'll start by building a simple interactive button and then progress to modern frameworks like React, Tailwind, and Next.js so you can build dynamic, powerful web applications.`,
       bullets: [
-        "HTML, CSS, & JavaScript fundamentals",
+        "React fundamentals",
         "Interactive front-end development",
         "Modern frameworks like React & Next.js",
       ],
@@ -86,15 +86,15 @@ export default function HomePage() {
     {
       title: "Game Development",
       icon: Gamepad,
-      content: `Ready to build your own adventure? This unit is all about creating games from the ground up. We'll explore core concepts like game loops, player movement, and collision detection. We'll use libraries like Three.js and learn to code in different languages to bring your game ideas to life.`,
+      content: `Ready to build your own adventure? This unit is all about creating games from the ground up. We'll explore core concepts like game loops, player movement, and collision detection. We'll use the Godot engine to bring your game ideas to life, whether it's 2D platformers or 3D worlds.`,
       bullets: [
         "Game loops & collision detection",
         "Player movement and mechanics",
-        "Graphics with libraries like Three.js",
+        "Game design with the Godot engine",
       ],
     },
     {
-      title: "Pytorch and ML",
+      title: "AI with PyTorch",
       icon: Cpu,
       content: `Dive into the world of artificial intelligence and machine learning. You'll learn to build and train neural networks using the powerful PyTorch library. We'll cover everything from data processing to deploying your own models for tasks like image recognition and natural language processing.`,
       bullets: [
@@ -114,12 +114,17 @@ export default function HomePage() {
     {
       question: "What kind of projects do you work on?",
       answer:
-        "We work on a wide variety of projects, including websites, games, mobile apps, and more. You're encouraged to bring your own ideas and build something you're passionate about!",
+        "We work on a wide variety of projects, including websites, games, AI, and more. You're encouraged to bring your own ideas and build something you're passionate about!",
     },
     {
       question: "How often do you meet?",
       answer:
-        "We meet weekly after school. Check our social media or contact us for the exact day and time.",
+        "We meet twice a week after school, with one day dedicated to hardware tracks and another to software. Contact us for the exact days and times.",
+    },
+    {
+      question: "Do I need to bring my own computer?",
+      answer:
+        "Bringing your own laptop is highly encouraged as it gives you the most control over your tools and projects. However, it is not required—we have computers and equipment available at the club for anyone who needs to use them.",
     },
   ];
 
@@ -153,10 +158,10 @@ export default function HomePage() {
       image: "https://placehold.co/150x150/2d3748/ffffff?text=Mentor+4",
     },
     {
-      name: "Starry",
-      title: "[placeholder title for Starry]",
+      name: "James Feng",
+      title: "[placeholder title for James Feng]",
       grade: "12th Grade",
-      bio: "[placeholder bio for Starry]",
+      bio: "[placeholder bio for James Feng]",
       image: "https://placehold.co/150x150/2d3748/ffffff?text=Mentor+5",
     },
   ];
