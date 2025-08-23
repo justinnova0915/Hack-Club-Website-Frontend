@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
-import { db } from '@/lib/firebase';
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { db } from "@/lib/firebase";
 import {
   collection,
   query,
@@ -15,7 +15,7 @@ import {
   getDocs,
   updateDoc,
   serverTimestamp,
-} from 'firebase/firestore';
+} from "firebase/firestore";
 interface Message {
   id: string;
   senderId: string;
@@ -45,19 +45,19 @@ interface PublicProfile {
   role: string;
 }
 const formatTimestamp = (isoString: string | null): string => {
-  if (!isoString) return 'N/A';
+  if (!isoString) return "N/A";
   try {
     const date = new Date(isoString);
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
       hour12: true,
     }).format(date);
   } catch (error) {
-    console.error('Error formatting timestamp:', isoString, error);
-    return 'Invalid Date';
+    console.error("Error formatting timestamp:", isoString, error);
+    return "Invalid Date";
   }
 };
 
@@ -87,21 +87,34 @@ const ConversationList: React.FC<ConversationListProps> = ({
       className={`
         lg:w-1/3 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex flex-col min-h-0 h-full
         lg:static transition-transform duration-300 ease-in-out
-        ${isCollapsed ? 'hidden lg:flex' : 'fixed inset-y-0 left-0 w-2/3 z-40 flex flex-col transform translate-x-0'}
-        ${isCollapsed ? 'lg:translate-x-0' : 'lg:w-1/3'}
-        ${!isCollapsed && 'translate-x-0'}
-        ${isCollapsed && 'transform -translate-x-full lg:transform-none'}
+        ${isCollapsed ? "hidden lg:flex" : "fixed inset-y-0 left-0 w-2/3 z-40 flex flex-col transform translate-x-0"}
+        ${isCollapsed ? "lg:translate-x-0" : "lg:w-1/3"}
+        ${!isCollapsed && "translate-x-0"}
+        ${isCollapsed && "transform -translate-x-full lg:transform-none"}
       `}
     >
       <div className="flex justify-between items-center mb-4 flex-shrink-0">
-        <h2 className="text-2xl font-bold text-[var(--color-accent-blue)]">Your Conversations</h2>
+        <h2 className="text-2xl font-bold text-[var(--color-accent-blue)]">
+          Your Conversations
+        </h2>
         <button
           onClick={onToggleList}
           className="lg:hidden p-1 rounded-full text-gray-400 hover:text-white transition duration-200"
           aria-label="Close Conversations"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M6 18L18 6M6 6l12 12"
+            ></path>
           </svg>
         </button>
       </div>
@@ -113,23 +126,33 @@ const ConversationList: React.FC<ConversationListProps> = ({
         Start New Conversation
       </button>
       {loading ? (
-        <p className="text-gray-400 text-center flex-grow flex items-center justify-center">Loading conversations...</p>
+        <p className="text-gray-400 text-center flex-grow flex items-center justify-center">
+          Loading conversations...
+        </p>
       ) : !currentUserUid ? (
-        <p className="text-gray-400 text-center flex-grow flex items-center justify-center">Please log in to see conversations.</p>
+        <p className="text-gray-400 text-center flex-grow flex items-center justify-center">
+          Please log in to see conversations.
+        </p>
       ) : conversations.length === 0 ? (
-        <p className="text-gray-400 text-center flex-grow flex items-center justify-center">No conversations yet. Start one!</p>
+        <p className="text-gray-400 text-center flex-grow flex items-center justify-center">
+          No conversations yet. Start one!
+        </p>
       ) : (
         <ul className="space-y-3 overflow-y-auto flex-grow pr-2 custom-scrollbar min-h-0">
           {conversations.map((conv) => {
             const isUnread =
               conv.lastMessageSenderId !== currentUserUid &&
               conv.lastMessageAt &&
-              (!conv.readBy?.[currentUserUid] || new Date(conv.lastMessageAt) > new Date(conv.readBy[currentUserUid]?.toDate()));
+              (!conv.readBy?.[currentUserUid] ||
+                new Date(conv.lastMessageAt) >
+                  new Date(conv.readBy[currentUserUid]?.toDate()));
             return (
               <li
                 key={conv.id}
                 className={`p-4 rounded-lg cursor-pointer transition duration-150 relative ${
-                  selectedConversationId === conv.id ? 'bg-[var(--color-accent-blue)] text-white' : 'bg-gray-700 hover:bg-gray-600'
+                  selectedConversationId === conv.id
+                    ? "bg-[var(--color-accent-blue)] text-white"
+                    : "bg-gray-700 hover:bg-gray-600"
                 }`}
                 onClick={() => onSelectConversation(conv.id)}
               >
@@ -139,10 +162,14 @@ const ConversationList: React.FC<ConversationListProps> = ({
                 <h3 className="text-lg font-semibold">
                   {conv.otherParticipant.name}
                 </h3>
-                <p className={`text-sm ${selectedConversationId === conv.id ? 'text-blue-100' : 'text-gray-400'} mt-1 truncate`}>
-                  {conv.lastMessageContent || 'No messages yet.'}
+                <p
+                  className={`text-sm ${selectedConversationId === conv.id ? "text-blue-100" : "text-gray-400"} mt-1 truncate`}
+                >
+                  {conv.lastMessageContent || "No messages yet."}
                 </p>
-                <p className={`text-xs ${selectedConversationId === conv.id ? 'text-blue-200' : 'text-gray-500'} mt-1`}>
+                <p
+                  className={`text-xs ${selectedConversationId === conv.id ? "text-blue-200" : "text-gray-500"} mt-1`}
+                >
                   {formatTimestamp(conv.lastMessageAt)}
                 </p>
               </li>
@@ -169,7 +196,7 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({
   messages,
   loadingMessages,
 }) => {
-  const [newMessageContent, setNewMessageContent] = useState('');
+  const [newMessageContent, setNewMessageContent] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -182,19 +209,28 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({
     e.preventDefault();
     if (newMessageContent.trim() && currentUserUid && selectedConversation) {
       await onSendMessage(newMessageContent.trim());
-      setNewMessageContent('');
+      setNewMessageContent("");
     }
   };
 
   return (
     <div className="lg:w-2/3 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex flex-col min-h-0 h-full relative">
       <div className="flex items-center mb-4 flex-shrink-0">
-        <h2 id="chat-header" className="text-2xl font-bold text-[var(--color-accent-blue)]">
-          {selectedConversation ? `Chat with ${selectedConversation.otherParticipant.name}` : 'Select a conversation to chat'}
+        <h2
+          id="chat-header"
+          className="text-2xl font-bold text-[var(--color-accent-blue)]"
+        >
+          {selectedConversation
+            ? `Chat with ${selectedConversation.otherParticipant.name}`
+            : "Select a conversation to chat"}
         </h2>
       </div>
 
-      <div id="messages-display" ref={messagesEndRef} className="flex-grow overflow-y-auto space-y-4 p-2 pr-4 custom-scrollbar min-h-0">
+      <div
+        id="messages-display"
+        ref={messagesEndRef}
+        className="flex-grow overflow-y-auto space-y-4 p-2 pr-4 custom-scrollbar min-h-0"
+      >
         {!currentUserUid ? (
           <p className="text-gray-400 text-center text-lg flex-grow flex items-center justify-center">
             Please log in to view messages.
@@ -215,17 +251,24 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({
           messages.map((message) => {
             const isCurrentUser = message.senderId === currentUserUid;
             return (
-              <div key={message.id} className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
+              <div
+                key={message.id}
+                className={`flex ${isCurrentUser ? "justify-end" : "justify-start"}`}
+              >
                 <div
                   className={`max-w-[70%] p-3 rounded-lg shadow-md ${
-                    isCurrentUser ? 'bg-[var(--color-accent-blue)] text-white' : 'bg-gray-700 text-gray-200'
+                    isCurrentUser
+                      ? "bg-[var(--color-accent-blue)] text-white"
+                      : "bg-gray-700 text-gray-200"
                   }`}
                 >
                   <p className="text-xs font-semibold mb-1">
-                    {isCurrentUser ? 'You' : message.senderName}
+                    {isCurrentUser ? "You" : message.senderName}
                   </p>
                   <p className="text-base">{message.content}</p>
-                  <p className={`text-right text-xs mt-1 ${isCurrentUser ? 'text-blue-100' : 'text-gray-400'}`}>
+                  <p
+                    className={`text-right text-xs mt-1 ${isCurrentUser ? "text-blue-100" : "text-gray-400"}`}
+                  >
                     {formatTimestamp(message.timestamp)}
                   </p>
                 </div>
@@ -235,7 +278,10 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({
         )}
       </div>
       {selectedConversation && currentUserUid && (
-        <form onSubmit={handleSubmit} className="mt-4 flex items-center space-x-2 flex-shrink-0">
+        <form
+          onSubmit={handleSubmit}
+          className="mt-4 flex items-center space-x-2 flex-shrink-0"
+        >
           <input
             type="text"
             id="new-message-content"
@@ -276,11 +322,11 @@ const NewConversationModal: React.FC<NewConversationModalProps> = ({
   errorMessage,
   loadingMentors,
 }) => {
-  const [selectedMentorId, setSelectedMentorId] = useState('');
+  const [selectedMentorId, setSelectedMentorId] = useState("");
 
   useEffect(() => {
     if (isOpen) {
-      setSelectedMentorId('');
+      setSelectedMentorId("");
     }
   }, [isOpen]);
 
@@ -295,14 +341,19 @@ const NewConversationModal: React.FC<NewConversationModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
       <div className="bg-gray-800 p-8 rounded-xl shadow-2xl border border-gray-700 max-w-lg w-full text-center">
-        <h3 className="text-2xl font-bold text-white mb-6">Start New Conversation</h3>
+        <h3 className="text-2xl font-bold text-white mb-6">
+          Start New Conversation
+        </h3>
         {errorMessage && (
           <div className="bg-red-800 text-white p-3 rounded-lg mb-4 text-sm">
             {errorMessage}
           </div>
         )}
         <div className="mb-6 text-left">
-          <label htmlFor="mentor-select" className="block text-gray-300 text-lg font-bold mb-2">
+          <label
+            htmlFor="mentor-select"
+            className="block text-gray-300 text-lg font-bold mb-2"
+          >
             Select a Mentor:
           </label>
           <select
@@ -313,16 +364,19 @@ const NewConversationModal: React.FC<NewConversationModalProps> = ({
             disabled={loadingMentors}
           >
             <option value="" disabled>
-              {loadingMentors ? 'Loading mentors...' : 'Select a mentor'}
+              {loadingMentors ? "Loading mentors..." : "Select a mentor"}
             </option>
             {!loadingMentors && mentors.length === 0 && (
-              <option value="" disabled>No mentors available to chat with.</option>
-            )}
-            {!loadingMentors && mentors.map((mentor) => (
-              <option key={mentor.uid} value={mentor.uid}>
-                {mentor.username || mentor.email} ({mentor.email})
+              <option value="" disabled>
+                No mentors available to chat with.
               </option>
-            ))}
+            )}
+            {!loadingMentors &&
+              mentors.map((mentor) => (
+                <option key={mentor.uid} value={mentor.uid}>
+                  {mentor.username || mentor.email} ({mentor.email})
+                </option>
+              ))}
           </select>
         </div>
         <div className="flex justify-center space-x-4">
@@ -349,57 +403,65 @@ const MessagesPage: React.FC = () => {
   const router = useRouter();
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
+  const [selectedConversationId, setSelectedConversationId] = useState<
+    string | null
+  >(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [mentors, setMentors] = useState<PublicProfile[]>([]);
   const [loadingConversations, setLoadingConversations] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [loadingMentors, setLoadingMentors] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isNewConversationModalOpen, setIsNewConversationModalOpen] = useState(false);
+  const [isNewConversationModalOpen, setIsNewConversationModalOpen] =
+    useState(false);
   const [isListCollapsed, setIsListCollapsed] = useState(true);
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-  const markConversationAsRead = useCallback(async (convId: string) => {
-    if (!user) return;
-    try {
-      const convRef = doc(db, 'conversations', convId);
-      await updateDoc(convRef, {
-        [`readBy.${user.uid}`]: serverTimestamp()
-      });
-      console.log(`Conversation ${convId} marked as read for user ${user.uid}`);
-    } catch (error) {
-      console.error('Error marking conversation as read:', error);
-    }
-  }, [user]);
+  const markConversationAsRead = useCallback(
+    async (convId: string) => {
+      if (!user) return;
+      try {
+        const convRef = doc(db, "conversations", convId);
+        await updateDoc(convRef, {
+          [`readBy.${user.uid}`]: serverTimestamp(),
+        });
+        console.log(
+          `Conversation ${convId} marked as read for user ${user.uid}`,
+        );
+      } catch (error) {
+        console.error("Error marking conversation as read:", error);
+      }
+    },
+    [user],
+  );
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push('/login');
+      router.push("/login");
     }
   }, [user, authLoading, router]);
 
   const fetchMentors = useCallback(async () => {
     if (!user) {
-        setMentors([]);
-        setLoadingMentors(false);
-        return;
+      setMentors([]);
+      setLoadingMentors(false);
+      return;
     }
     setLoadingMentors(true);
     setErrorMessage(null);
     try {
       const q = query(
-        collection(db, 'public_profiles'),
-        where('role', 'in', ['mentor', 'admin'])
+        collection(db, "public_profiles"),
+        where("role", "in", ["mentor", "admin"]),
       );
       const querySnapshot = await getDocs(q);
       const fetchedMentors: PublicProfile[] = querySnapshot.docs
-        .map(doc => ({ uid: doc.id, ...doc.data() } as PublicProfile))
-        .filter(mentor => mentor.uid !== user.uid);
+        .map((doc) => ({ uid: doc.id, ...doc.data() }) as PublicProfile)
+        .filter((mentor) => mentor.uid !== user.uid);
       setMentors(fetchedMentors);
     } catch (err: any) {
-      console.error('Error fetching mentors:', err);
-      setErrorMessage('Failed to load mentors.');
+      console.error("Error fetching mentors:", err);
+      setErrorMessage("Failed to load mentors.");
     } finally {
       setLoadingMentors(false);
     }
@@ -413,41 +475,63 @@ const MessagesPage: React.FC = () => {
       return;
     }
     setLoadingConversations(true);
-    const q = query(collection(db, 'conversations'), where('participants', 'array-contains', user.uid), orderBy('lastMessageAt', 'desc'));
-    const unsubscribe = onSnapshot(q, async (snapshot) => {
-      const fetchedConversations = await Promise.all(snapshot.docs.map(async (docSnapshot) => {
-        const data = docSnapshot.data();
-        const otherParticipantId = data.participants.find((p: string) => p !== user.uid);
-        let otherParticipantName = 'Unknown User';
-        if (otherParticipantId) {
-          const publicProfileDoc = await getDoc(doc(db, 'public_profiles', otherParticipantId));
-          if (publicProfileDoc.exists()) {
-            otherParticipantName = publicProfileDoc.data().username || otherParticipantId;
-          }
+    const q = query(
+      collection(db, "conversations"),
+      where("participants", "array-contains", user.uid),
+      orderBy("lastMessageAt", "desc"),
+    );
+    const unsubscribe = onSnapshot(
+      q,
+      async (snapshot) => {
+        const fetchedConversations = await Promise.all(
+          snapshot.docs.map(async (docSnapshot) => {
+            const data = docSnapshot.data();
+            const otherParticipantId = data.participants.find(
+              (p: string) => p !== user.uid,
+            );
+            let otherParticipantName = "Unknown User";
+            if (otherParticipantId) {
+              const publicProfileDoc = await getDoc(
+                doc(db, "public_profiles", otherParticipantId),
+              );
+              if (publicProfileDoc.exists()) {
+                otherParticipantName =
+                  publicProfileDoc.data().username || otherParticipantId;
+              }
+            }
+            return {
+              id: docSnapshot.id,
+              participants: data.participants,
+              otherParticipant: {
+                id: otherParticipantId,
+                name: otherParticipantName,
+              },
+              lastMessageAt:
+                data.lastMessageAt?.toDate()?.toISOString() || null,
+              lastMessageContent: data.lastMessageContent || null,
+              lastMessageSenderId: data.lastMessageSenderId || null,
+              createdAt: data.createdAt?.toDate()?.toISOString() || "",
+              readBy: data.readBy,
+            };
+          }),
+        );
+        setConversations(fetchedConversations);
+        setLoadingConversations(false);
+        if (!selectedConversationId && fetchedConversations.length > 0) {
+          setSelectedConversationId(fetchedConversations[0].id);
+        } else if (
+          selectedConversationId &&
+          !fetchedConversations.some((c) => c.id === selectedConversationId)
+        ) {
+          setSelectedConversationId(null);
         }
-        return {
-          id: docSnapshot.id,
-          participants: data.participants,
-          otherParticipant: { id: otherParticipantId, name: otherParticipantName },
-          lastMessageAt: data.lastMessageAt?.toDate()?.toISOString() || null,
-          lastMessageContent: data.lastMessageContent || null,
-          lastMessageSenderId: data.lastMessageSenderId || null,
-          createdAt: data.createdAt?.toDate()?.toISOString() || '',
-          readBy: data.readBy,
-        };
-      }));
-      setConversations(fetchedConversations);
-      setLoadingConversations(false);
-      if (!selectedConversationId && fetchedConversations.length > 0) {
-        setSelectedConversationId(fetchedConversations[0].id);
-      } else if (selectedConversationId && !fetchedConversations.some(c => c.id === selectedConversationId)) {
-        setSelectedConversationId(null);
-      }
-    }, (err) => {
-      console.error('Error fetching conversations:', err);
-      setErrorMessage('Failed to load conversations.');
-      setLoadingConversations(false);
-    });
+      },
+      (err) => {
+        console.error("Error fetching conversations:", err);
+        setErrorMessage("Failed to load conversations.");
+        setLoadingConversations(false);
+      },
+    );
     return () => unsubscribe();
   }, [user, selectedConversationId]);
 
@@ -458,34 +542,49 @@ const MessagesPage: React.FC = () => {
     }
 
     setLoadingMessages(true);
-    const messagesRef = collection(db, 'conversations', selectedConversationId, 'messages');
-    const q = query(messagesRef, orderBy('timestamp', 'asc'));
-    const unsubscribe = onSnapshot(q, async (snapshot) => {
-      if (snapshot.docs.length > 0) {
-        markConversationAsRead(selectedConversationId);
-      }
-      const fetchedMessages = await Promise.all(snapshot.docs.map(async (docSnapshot) => {
-        const data = docSnapshot.data();
-        let senderName = 'Unknown';
-        if (data.senderId) {
-            const publicProfileDoc = await getDoc(doc(db, 'public_profiles', data.senderId));
-            senderName = publicProfileDoc.exists() ? publicProfileDoc.data().username || data.senderId : 'You';
+    const messagesRef = collection(
+      db,
+      "conversations",
+      selectedConversationId,
+      "messages",
+    );
+    const q = query(messagesRef, orderBy("timestamp", "asc"));
+    const unsubscribe = onSnapshot(
+      q,
+      async (snapshot) => {
+        if (snapshot.docs.length > 0) {
+          markConversationAsRead(selectedConversationId);
         }
-        return {
-          id: docSnapshot.id,
-          senderId: data.senderId,
-          senderName: senderName,
-          content: data.content,
-          timestamp: data.timestamp?.toDate()?.toISOString() || '',
-        };
-      }));
-      setMessages(fetchedMessages);
-      setLoadingMessages(false);
-    }, (err) => {
-      console.error('Error fetching messages:', err);
-      setErrorMessage('Failed to load messages.');
-      setLoadingMessages(false);
-    });
+        const fetchedMessages = await Promise.all(
+          snapshot.docs.map(async (docSnapshot) => {
+            const data = docSnapshot.data();
+            let senderName = "Unknown";
+            if (data.senderId) {
+              const publicProfileDoc = await getDoc(
+                doc(db, "public_profiles", data.senderId),
+              );
+              senderName = publicProfileDoc.exists()
+                ? publicProfileDoc.data().username || data.senderId
+                : "You";
+            }
+            return {
+              id: docSnapshot.id,
+              senderId: data.senderId,
+              senderName: senderName,
+              content: data.content,
+              timestamp: data.timestamp?.toDate()?.toISOString() || "",
+            };
+          }),
+        );
+        setMessages(fetchedMessages);
+        setLoadingMessages(false);
+      },
+      (err) => {
+        console.error("Error fetching messages:", err);
+        setErrorMessage("Failed to load messages.");
+        setLoadingMessages(false);
+      },
+    );
     return () => unsubscribe();
   }, [selectedConversationId, user, markConversationAsRead]);
 
@@ -504,26 +603,35 @@ const MessagesPage: React.FC = () => {
 
   const handleSendMessage = async (content: string) => {
     if (!user || !selectedConversationId) {
-      setErrorMessage('User not authenticated or no conversation selected.');
+      setErrorMessage("User not authenticated or no conversation selected.");
       return;
     }
     try {
       const idToken = await user.getIdToken();
-      const response = await fetch(`${API_BASE_URL}/api/messages/conversations/${selectedConversationId}/messages`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
-        body: JSON.stringify({ content }),
-      });
-      if (!response.ok) throw new Error((await response.json()).error || 'Failed to send message.');
+      const response = await fetch(
+        `${API_BASE_URL}/api/messages/conversations/${selectedConversationId}/messages`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
+          },
+          body: JSON.stringify({ content }),
+        },
+      );
+      if (!response.ok)
+        throw new Error(
+          (await response.json()).error || "Failed to send message.",
+        );
     } catch (err: any) {
-      console.error('Error sending message:', err);
+      console.error("Error sending message:", err);
       setErrorMessage(err.message);
     }
   };
 
   const handleStartNewConversationClick = () => {
     if (!user) {
-      setErrorMessage('You must be logged in to start a new conversation.');
+      setErrorMessage("You must be logged in to start a new conversation.");
       return;
     }
     setIsNewConversationModalOpen(true);
@@ -531,17 +639,26 @@ const MessagesPage: React.FC = () => {
 
   const handleModalStartChat = async (mentorId: string) => {
     if (!user) {
-      setErrorMessage('User not authenticated.');
+      setErrorMessage("User not authenticated.");
       return;
     }
     try {
       const idToken = await user.getIdToken();
-      const response = await fetch(`${API_BASE_URL}/api/messages/conversations`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
-        body: JSON.stringify({ recipientId: mentorId }),
-      });
-      if (!response.ok) throw new Error((await response.json()).error || 'Failed to start conversation.');
+      const response = await fetch(
+        `${API_BASE_URL}/api/messages/conversations`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
+          },
+          body: JSON.stringify({ recipientId: mentorId }),
+        },
+      );
+      if (!response.ok)
+        throw new Error(
+          (await response.json()).error || "Failed to start conversation.",
+        );
       const result = await response.json();
       setSelectedConversationId(result.conversationId);
       setIsNewConversationModalOpen(false);
@@ -549,12 +666,13 @@ const MessagesPage: React.FC = () => {
         setIsListCollapsed(true);
       }
     } catch (err: any) {
-      console.error('Error starting new conversation:', err);
+      console.error("Error starting new conversation:", err);
       setErrorMessage(err.message);
     }
   };
 
-  const currentSelectedConversation = conversations.find(conv => conv.id === selectedConversationId) || null;
+  const currentSelectedConversation =
+    conversations.find((conv) => conv.id === selectedConversationId) || null;
 
   if (authLoading || !user) {
     return (
@@ -570,13 +688,24 @@ const MessagesPage: React.FC = () => {
   return (
     <div className="h-full bg-[var(--color-primary-dark)] text-[var(--color-primary-light)] flex flex-col relative overflow-hidden">
       <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #374151; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #6b7280; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #374151;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #6b7280;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #9ca3af;
+        }
       `}</style>
       <div
-        className={`fixed inset-0 bg-black bg-opacity-50 z-30 transition-opacity duration-300 ease-in-out ${isListCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+        className={`fixed inset-0 bg-black bg-opacity-50 z-30 transition-opacity duration-300 ease-in-out ${isListCollapsed ? "opacity-0 pointer-events-none" : "opacity-100"}`}
         onClick={toggleList}
       ></div>
 
@@ -589,8 +718,19 @@ const MessagesPage: React.FC = () => {
                 className="lg:hidden p-2 text-gray-400 hover:text-white rounded-full transition duration-200"
                 aria-label="Toggle Conversations"
               >
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                <svg
+                  className="w-8 h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  ></path>
                 </svg>
               </button>
               <h1 className="text-4xl md:text-6xl font-extrabold text-[var(--color-accent-blue)]">

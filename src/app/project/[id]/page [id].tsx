@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth } from '@/context/AuthContext';
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 
 interface Project {
   id: string;
@@ -33,7 +33,7 @@ export default function ProjectDetailsPage() {
           setLoading(true);
           const response = await fetch(`${API_BASE_URL}/api/projects/${id}`);
           if (!response.ok) {
-            throw new Error('Failed to fetch project details.');
+            throw new Error("Failed to fetch project details.");
           }
           const data = await response.json();
           setProject(data);
@@ -80,7 +80,10 @@ export default function ProjectDetailsPage() {
               {project.title}
             </h1>
             {user && (
-              <Link href={`/project/create?id=${project.id}`} className="bg-yellow-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-yellow-600 transition-colors duration-200">
+              <Link
+                href={`/project/create?id=${project.id}`}
+                className="bg-yellow-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-yellow-600 transition-colors duration-200"
+              >
                 Edit
               </Link>
             )}
@@ -89,13 +92,21 @@ export default function ProjectDetailsPage() {
             By {project.authorName}
           </p>
 
-          <div className="prose prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: project.description }} />
+          <div
+            className="prose prose-invert max-w-none"
+            dangerouslySetInnerHTML={{ __html: project.description }}
+          />
 
           <div className="mt-8">
-            <h3 className="text-2xl font-bold text-[var(--color-accent-green)] mb-4">Technologies Used:</h3>
+            <h3 className="text-2xl font-bold text-[var(--color-accent-green)] mb-4">
+              Technologies Used:
+            </h3>
             <div className="flex flex-wrap gap-3">
               {project.technologies.map((tech) => (
-                <span key={tech} className="bg-gray-700 text-gray-300 text-md font-medium px-4 py-2 rounded-full">
+                <span
+                  key={tech}
+                  className="bg-gray-700 text-gray-300 text-md font-medium px-4 py-2 rounded-full"
+                >
                   {tech}
                 </span>
               ))}
@@ -104,12 +115,22 @@ export default function ProjectDetailsPage() {
 
           <div className="mt-10 pt-6 border-t border-gray-700 flex justify-start space-x-4">
             {project.githubUrl && (
-              <Link href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-600 font-bold text-lg transition-colors duration-200">
+              <Link
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:text-blue-600 font-bold text-lg transition-colors duration-200"
+              >
                 View on GitHub
               </Link>
             )}
             {project.liveUrl && (
-              <Link href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="text-green-400 hover:text-green-600 font-bold text-lg transition-colors duration-200">
+              <Link
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-green-400 hover:text-green-600 font-bold text-lg transition-colors duration-200"
+              >
                 View Live Demo
               </Link>
             )}

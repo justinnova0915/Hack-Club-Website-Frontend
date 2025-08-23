@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useEffect, } from 'react';
-import { Lightbulb, Code, Gamepad } from 'lucide-react';
-import Image from 'next/image';
+import { useState, useEffect } from "react";
+import { Lightbulb, Code, Gamepad } from "lucide-react";
+import Image from "next/image";
 
 /**
  * This is a basic page template for a Next.js website, now with some
@@ -42,7 +42,13 @@ export default function AboutPageTemplate() {
         </p>
       </header>
       <main className="flex-grow max-w-6xl mx-auto w-full">
-        <Image src={"/images/tenor.gif"} alt="Animated GIF" width={600} height={400} className="mx-auto mb-8 rounded-lg shadow-lg" />
+        <Image
+          src={"/images/tenor.gif"}
+          alt="Animated GIF"
+          width={600}
+          height={400}
+          className="mx-auto mb-8 rounded-lg shadow-lg"
+        />
       </main>
     </div>
   );

@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useMemo } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth } from '@/context/AuthContext';
-import SimpleMDE from 'react-simplemde-editor';
-import 'easymde/dist/easymde.min.css';
+import { useState, useEffect, useMemo } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+import SimpleMDE from "react-simplemde-editor";
+import "easymde/dist/easymde.min.css";
 
 interface Project {
   id: string;
@@ -21,13 +21,13 @@ export default function CreateProjectPage() {
   const { user, loading: authLoading, userRole } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const projectId = searchParams.get('id');
+  const projectId = searchParams.get("id");
 
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [technologies, setTechnologies] = useState('');
-  const [githubUrl, setGithubUrl] = useState('');
-  const [liveUrl, setLiveUrl] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [technologies, setTechnologies] = useState("");
+  const [githubUrl, setGithubUrl] = useState("");
+  const [liveUrl, setLiveUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [pageLoading, setPageLoading] = useState(true);
@@ -38,13 +38,30 @@ export default function CreateProjectPage() {
     return {
       autofocus: true,
       spellChecker: false,
-      toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "|", "preview", "side-by-side", "fullscreen", "|", "guide"] as const,
+      toolbar: [
+        "bold",
+        "italic",
+        "heading",
+        "|",
+        "quote",
+        "unordered-list",
+        "ordered-list",
+        "|",
+        "link",
+        "image",
+        "|",
+        "preview",
+        "side-by-side",
+        "fullscreen",
+        "|",
+        "guide",
+      ] as const,
     };
   }, []);
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push('/login');
+      router.push("/login");
       return;
     }
 
@@ -54,29 +71,39 @@ export default function CreateProjectPage() {
         setError(null);
         try {
           const idToken = await user?.getIdToken();
-          console.log(`[Frontend] Attempting to fetch project for edit: ${projectId}`);
-          const response = await fetch(`${API_BASE_URL}/api/projects/${projectId}`, {
-            headers: {
-              'Authorization': `Bearer ${idToken}`,
+          console.log(
+            `[Frontend] Attempting to fetch project for edit: ${projectId}`,
+          );
+          const response = await fetch(
+            `${API_BASE_URL}/api/projects/${projectId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${idToken}`,
+              },
             },
-          });
+          );
 
           if (!response.ok) {
             const errorData = await response.json();
-            console.error(`[Frontend] Failed to fetch project for editing: Status: ${response.status}, Error:`, errorData);
-            throw new Error(errorData.error || 'Failed to fetch project for editing.');
+            console.error(
+              `[Frontend] Failed to fetch project for editing: Status: ${response.status}, Error:`,
+              errorData,
+            );
+            throw new Error(
+              errorData.error || "Failed to fetch project for editing.",
+            );
           }
 
           const data: Project = await response.json();
-          console.log('[Frontend] Project data fetched for edit:', data);
+          console.log("[Frontend] Project data fetched for edit:", data);
           setTitle(data.title);
           setDescription(data.description);
-          setTechnologies(data.technologies.join(', '));
-          setGithubUrl(data.githubUrl || '');
-          setLiveUrl(data.liveUrl || '');
+          setTechnologies(data.technologies.join(", "));
+          setGithubUrl(data.githubUrl || "");
+          setLiveUrl(data.liveUrl || "");
         } catch (err: any) {
-          console.error('[Frontend] Error fetching project for edit:', err);
-          setError(err.message || 'Failed to load project for editing.');
+          console.error("[Frontend] Error fetching project for edit:", err);
+          setError(err.message || "Failed to load project for editing.");
         } finally {
           setPageLoading(false);
         }
@@ -90,19 +117,18 @@ export default function CreateProjectPage() {
     }
   }, [projectId, user, authLoading, router, API_BASE_URL]);
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
 
     if (!title.trim() || !description.trim()) {
-      setError('Title and description cannot be empty.');
+      setError("Title and description cannot be empty.");
       return;
     }
 
     if (!user) {
-      setError('You must be logged in to create/edit a project.');
+      setError("You must be logged in to create/edit a project.");
       return;
     }
 
@@ -115,17 +141,17 @@ export default function CreateProjectPage() {
       const projectData = {
         title,
         description,
-        technologies: technologies.split(',').map(tech => tech.trim()),
+        technologies: technologies.split(",").map((tech) => tech.trim()),
         githubUrl,
         liveUrl,
       };
 
       if (projectId) {
-        method = 'PUT';
+        method = "PUT";
         url = `${API_BASE_URL}/api/projects/${projectId}`;
         console.log(`[Frontend] Sending PUT request to: ${url}`);
       } else {
-        method = 'POST';
+        method = "POST";
         url = `${API_BASE_URL}/api/projects`;
         console.log(`[Frontend] Sending POST request to: ${url}`);
       }
@@ -133,39 +159,50 @@ export default function CreateProjectPage() {
       response = await fetch(url, {
         method: method,
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
         },
         body: JSON.stringify(projectData),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error(`[Frontend] API Error: Status: ${response.status}, Error:`, errorData);
-        throw new Error(errorData.error || `Failed to ${projectId ? 'update' : 'create'} project.`);
+        console.error(
+          `[Frontend] API Error: Status: ${response.status}, Error:`,
+          errorData,
+        );
+        throw new Error(
+          errorData.error ||
+            `Failed to ${projectId ? "update" : "create"} project.`,
+        );
       }
 
       const result = await response.json();
-      setSuccess(result.message || `Project ${projectId ? 'updated' : 'created'} successfully!`);
-      setTitle('');
-      setDescription('');
-      setTechnologies('');
-      setGithubUrl('');
-      setLiveUrl('');
+      setSuccess(
+        result.message ||
+          `Project ${projectId ? "updated" : "created"} successfully!`,
+      );
+      setTitle("");
+      setDescription("");
+      setTechnologies("");
+      setGithubUrl("");
+      setLiveUrl("");
       setTimeout(() => {
-        router.push('/project');
+        router.push("/project");
       }, 1500);
-
     } catch (err: any) {
-      console.error('[Frontend] Caught error in handleSubmit:', err);
-      setError(err.message || `An unexpected error occurred while trying to ${projectId ? 'update' : 'create'} the project.`);
+      console.error("[Frontend] Caught error in handleSubmit:", err);
+      setError(
+        err.message ||
+          `An unexpected error occurred while trying to ${projectId ? "update" : "create"} the project.`,
+      );
     }
   };
 
   if (authLoading || pageLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[var(--color-primary-dark)] text-[var(--color-primary-light)]">
-        <p>Loading {projectId ? 'project for editing' : 'page'}...</p>
+        <p>Loading {projectId ? "project for editing" : "page"}...</p>
       </div>
     );
   }
@@ -173,7 +210,9 @@ export default function CreateProjectPage() {
   if (!user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[var(--color-primary-dark)] text-red-500">
-        <p className="text-xl">Forbidden: You do not have permission to access this page.</p>
+        <p className="text-xl">
+          Forbidden: You do not have permission to access this page.
+        </p>
       </div>
     );
   }
@@ -183,10 +222,11 @@ export default function CreateProjectPage() {
       <main className="flex-grow container mx-auto p-6 md:p-12">
         <div className="bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700 w-full">
           <h1 className="text-4xl md:text-5xl font-extrabold mb-6 text-[var(--color-accent-blue)]">
-            {projectId ? 'Edit Project' : 'Submit a New Project'}
+            {projectId ? "Edit Project" : "Submit a New Project"}
           </h1>
           <p className="text-gray-400 mb-8 text-lg">
-            Showcase your work to the club! Fill out the details below to add your project to the gallery.
+            Showcase your work to the club! Fill out the details below to add
+            your project to the gallery.
           </p>
 
           {error && (
@@ -200,10 +240,16 @@ export default function CreateProjectPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+          <form
+            onSubmit={handleSubmit}
+            className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6"
+          >
             <div className="md:col-span-1">
               <div className="mb-6">
-                <label htmlFor="title" className="block text-gray-300 text-lg font-bold mb-2">
+                <label
+                  htmlFor="title"
+                  className="block text-gray-300 text-lg font-bold mb-2"
+                >
                   Project Title
                 </label>
                 <input
@@ -218,7 +264,10 @@ export default function CreateProjectPage() {
               </div>
 
               <div className="mb-6">
-                <label htmlFor="technologies" className="block text-gray-300 text-lg font-bold mb-2">
+                <label
+                  htmlFor="technologies"
+                  className="block text-gray-300 text-lg font-bold mb-2"
+                >
                   Technologies Used
                 </label>
                 <input
@@ -230,12 +279,17 @@ export default function CreateProjectPage() {
                   onChange={(e) => setTechnologies(e.target.value)}
                   required
                 />
-                <p className="text-gray-500 text-sm mt-2">Please provide a comma-separated list.</p>
+                <p className="text-gray-500 text-sm mt-2">
+                  Please provide a comma-separated list.
+                </p>
               </div>
             </div>
             <div className="md:col-span-1">
               <div className="mb-6">
-                <label htmlFor="githubUrl" className="block text-gray-300 text-lg font-bold mb-2">
+                <label
+                  htmlFor="githubUrl"
+                  className="block text-gray-300 text-lg font-bold mb-2"
+                >
                   GitHub Repository URL
                 </label>
                 <input
@@ -250,7 +304,10 @@ export default function CreateProjectPage() {
               </div>
 
               <div className="mb-6">
-                <label htmlFor="liveUrl" className="block text-gray-300 text-lg font-bold mb-2">
+                <label
+                  htmlFor="liveUrl"
+                  className="block text-gray-300 text-lg font-bold mb-2"
+                >
                   Live Demo URL (optional)
                 </label>
                 <input
@@ -264,7 +321,10 @@ export default function CreateProjectPage() {
               </div>
             </div>
             <div className="md:col-span-2 mb-6">
-              <label htmlFor="description" className="block text-gray-300 text-lg font-bold mb-2">
+              <label
+                htmlFor="description"
+                className="block text-gray-300 text-lg font-bold mb-2"
+              >
                 Project Description
               </label>
               <SimpleMDE
@@ -285,7 +345,7 @@ export default function CreateProjectPage() {
                 type="submit"
                 className="bg-[var(--color-accent-blue)] hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl focus:outline-none focus:shadow-outline transition duration-200 text-lg"
               >
-                {projectId ? 'Update Project' : 'Submit Project'}
+                {projectId ? "Update Project" : "Submit Project"}
               </button>
             </div>
           </form>

@@ -23,27 +23,27 @@ export interface Unit {
 }
 const curriculumData: Unit[] = [
   {
-    id: 'unit1',
-    title: 'Coming soon!',
-    duration: 'Coming soon!',
-    goal: 'Coming soon!',
+    id: "unit1",
+    title: "Coming soon!",
+    duration: "Coming soon!",
+    goal: "Coming soon!",
     lessons: [
       {
-        id: 'unit1-week1-2',
-        week: '1-2',
+        id: "unit1-week1-2",
+        week: "1-2",
         software: {
-          id: 'unit1-week1-2-software',
-          title: 'Coming soon!',
-          summary: 'Coming soon!',
-          type: 'Software',
-          instructor: 'TBD',
+          id: "unit1-week1-2-software",
+          title: "Coming soon!",
+          summary: "Coming soon!",
+          type: "Software",
+          instructor: "TBD",
         },
         hardware: {
-          id: 'unit1-week1-2-hardware',
-          title: 'Coming soon!',
-          summary: 'Coming soon!',
-          type: 'Hardware',
-          instructor: 'TBD',
+          id: "unit1-week1-2-hardware",
+          title: "Coming soon!",
+          summary: "Coming soon!",
+          type: "Hardware",
+          instructor: "TBD",
         },
       },
     ],

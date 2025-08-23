@@ -1,6 +1,12 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import {
   onAuthStateChanged,
   User,
@@ -9,9 +15,9 @@ import {
   signOut,
   updateProfile,
   sendEmailVerification,
-} from 'firebase/auth';
-import { auth, db } from '@/lib/firebase';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+} from "firebase/auth";
+import { auth, db } from "@/lib/firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 interface CustomUser extends User {
   username?: string | null;
@@ -29,9 +35,18 @@ interface AuthContextType {
   user: CustomUser | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<any>;
-  signUp: (email: string, password: string, username: string, firstName: string, lastName: string, grade: string, skillLevel: string, skills: { webDevSkill: string, gameDevSkill: string, aiSkill: string }) => Promise<void>;
+  signUp: (
+    email: string,
+    password: string,
+    username: string,
+    firstName: string,
+    lastName: string,
+    grade: string,
+    skillLevel: string,
+    skills: { webDevSkill: string; gameDevSkill: string; aiSkill: string },
+  ) => Promise<void>;
   logOut: () => Promise<void>;
-  userRole: 'student' | 'mentor' | 'admin' | null;
+  userRole: "student" | "mentor" | "admin" | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -39,77 +54,121 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<CustomUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [userRole, setUserRole] = useState<'student' | 'mentor' | 'admin' | null>(null);
+  const [userRole, setUserRole] = useState<
+    "student" | "mentor" | "admin" | null
+  >(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser && currentUser.emailVerified) {
-        const userDocRef = doc(db, 'users', currentUser.uid);
+        const userDocRef = doc(db, "users", currentUser.uid);
         const userDocSnap = await getDoc(userDocRef);
 
-        let role: 'student' | 'mentor' | 'admin' = 'student';
+        let role: "student" | "mentor" | "admin" = "student";
         let fetchedUserData: { [key: string]: any } = {};
 
         if (userDocSnap.exists()) {
           fetchedUserData = userDocSnap.data();
-          role = fetchedUserData.role || 'student';
+          role = fetchedUserData.role || "student";
         } else {
-          const defaultUsername = currentUser.displayName || currentUser.email?.split('@')[0] || '';
-          await setDoc(userDocRef, {
+          const defaultUsername =
+            currentUser.displayName || currentUser.email?.split("@")[0] || "";
+          await setDoc(
+            userDocRef,
+            {
+              email: currentUser.email,
+              role: "student",
+              createdAt: new Date(),
+              username: defaultUsername,
+              firstName: "",
+              lastName: "",
+              grade: "",
+              skillLevel: "",
+              webDevSkill: "",
+              gameDevSkill: "",
+              aiSkill: "",
+            },
+            { merge: true },
+          );
+          fetchedUserData = {
             email: currentUser.email,
-            role: 'student',
-            createdAt: new Date(),
+            role: "student",
             username: defaultUsername,
-            firstName: '',
-            lastName: '',
-            grade: '',
-            skillLevel: '',
-            webDevSkill: '',
-            gameDevSkill: '',
-            aiSkill: '',
-          }, { merge: true });
-          fetchedUserData = { email: currentUser.email, role: 'student', username: defaultUsername, firstName: '', lastName: '', grade: '', skillLevel: '', webDevSkill: '', gameDevSkill: '', aiSkill: '' };
+            firstName: "",
+            lastName: "",
+            grade: "",
+            skillLevel: "",
+            webDevSkill: "",
+            gameDevSkill: "",
+            aiSkill: "",
+          };
           console.log("Created missing user document in 'users' collection.");
         }
         setUserRole(role);
-        const publicProfileRef = doc(db, 'public_profiles', currentUser.uid);
+        const publicProfileRef = doc(db, "public_profiles", currentUser.uid);
         const publicProfileSnap = await getDoc(publicProfileRef);
 
-        const currentUsername = publicProfileSnap.exists() ? publicProfileSnap.data().username : (fetchedUserData.username || currentUser.displayName || currentUser.email?.split('@')[0] || '');
-        const currentFirstName = publicProfileSnap.exists() ? publicProfileSnap.data().firstName : (fetchedUserData.firstName || '');
-        const currentLastName = publicProfileSnap.exists() ? publicProfileSnap.data().lastName : (fetchedUserData.lastName || '');
-        const currentGrade = publicProfileSnap.exists() ? publicProfileSnap.data().grade : (fetchedUserData.grade || '');
-        const currentSkillLevel = publicProfileSnap.exists() ? publicProfileSnap.data().skillLevel : (fetchedUserData.skillLevel || '');
-        const currentWebDevSkill = publicProfileSnap.exists() ? publicProfileSnap.data().webDevSkill : (fetchedUserData.webDevSkill || '');
-        const currentGameDevSkill = publicProfileSnap.exists() ? publicProfileSnap.data().gameDevSkill : (fetchedUserData.gameDevSkill || '');
-        const currentAiSkill = publicProfileSnap.exists() ? publicProfileSnap.data().aiSkill : (fetchedUserData.aiSkill || '');
-        const currentEmail = publicProfileSnap.exists() ? publicProfileSnap.data().email : (fetchedUserData.email || currentUser.email || '');
+        const currentUsername = publicProfileSnap.exists()
+          ? publicProfileSnap.data().username
+          : fetchedUserData.username ||
+            currentUser.displayName ||
+            currentUser.email?.split("@")[0] ||
+            "";
+        const currentFirstName = publicProfileSnap.exists()
+          ? publicProfileSnap.data().firstName
+          : fetchedUserData.firstName || "";
+        const currentLastName = publicProfileSnap.exists()
+          ? publicProfileSnap.data().lastName
+          : fetchedUserData.lastName || "";
+        const currentGrade = publicProfileSnap.exists()
+          ? publicProfileSnap.data().grade
+          : fetchedUserData.grade || "";
+        const currentSkillLevel = publicProfileSnap.exists()
+          ? publicProfileSnap.data().skillLevel
+          : fetchedUserData.skillLevel || "";
+        const currentWebDevSkill = publicProfileSnap.exists()
+          ? publicProfileSnap.data().webDevSkill
+          : fetchedUserData.webDevSkill || "";
+        const currentGameDevSkill = publicProfileSnap.exists()
+          ? publicProfileSnap.data().gameDevSkill
+          : fetchedUserData.gameDevSkill || "";
+        const currentAiSkill = publicProfileSnap.exists()
+          ? publicProfileSnap.data().aiSkill
+          : fetchedUserData.aiSkill || "";
+        const currentEmail = publicProfileSnap.exists()
+          ? publicProfileSnap.data().email
+          : fetchedUserData.email || currentUser.email || "";
 
-        if (!publicProfileSnap.exists() ||
-            publicProfileSnap.data().role !== role ||
-            publicProfileSnap.data().username !== currentUsername ||
-            publicProfileSnap.data().email !== currentEmail ||
-            publicProfileSnap.data().firstName !== currentFirstName ||
-            publicProfileSnap.data().lastName !== currentLastName ||
-            publicProfileSnap.data().grade !== currentGrade ||
-            publicProfileSnap.data().skillLevel !== currentSkillLevel ||
-            publicProfileSnap.data().webDevSkill !== currentWebDevSkill ||
-            publicProfileSnap.data().gameDevSkill !== currentGameDevSkill ||
-            publicProfileSnap.data().aiSkill !== currentAiSkill
-            ) {
-          await setDoc(publicProfileRef, {
-            username: currentUsername,
-            email: currentEmail,
-            role: role,
-            uid: currentUser.uid,
-            firstName: currentFirstName,
-            lastName: currentLastName,
-            grade: currentGrade,
-            skillLevel: currentSkillLevel,
-            webDevSkill: currentWebDevSkill,
-            gameDevSkill: currentGameDevSkill,
-            aiSkill: currentAiSkill,
-          }, { merge: true });
+        if (
+          !publicProfileSnap.exists() ||
+          publicProfileSnap.data().role !== role ||
+          publicProfileSnap.data().username !== currentUsername ||
+          publicProfileSnap.data().email !== currentEmail ||
+          publicProfileSnap.data().firstName !== currentFirstName ||
+          publicProfileSnap.data().lastName !== currentLastName ||
+          publicProfileSnap.data().grade !== currentGrade ||
+          publicProfileSnap.data().skillLevel !== currentSkillLevel ||
+          publicProfileSnap.data().webDevSkill !== currentWebDevSkill ||
+          publicProfileSnap.data().gameDevSkill !== currentGameDevSkill ||
+          publicProfileSnap.data().aiSkill !== currentAiSkill
+        ) {
+          await setDoc(
+            publicProfileRef,
+            {
+              username: currentUsername,
+              email: currentEmail,
+              role: role,
+              uid: currentUser.uid,
+              firstName: currentFirstName,
+              lastName: currentLastName,
+              grade: currentGrade,
+              skillLevel: currentSkillLevel,
+              webDevSkill: currentWebDevSkill,
+              gameDevSkill: currentGameDevSkill,
+              aiSkill: currentAiSkill,
+            },
+            { merge: true },
+          );
           console.log("Created/Updated public_profile document.");
         }
         const augmentedUser: CustomUser = {
@@ -126,7 +185,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         };
 
         setUser(augmentedUser);
-
       } else {
         setUser(null);
         setUserRole(null);
@@ -138,13 +196,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password,
+    );
     const user = userCredential.user;
     if (!user.emailVerified) {
       await signOut(auth);
       throw new Error("Please verify your email before signing in.");
     }
-    const userDocRef = doc(db, 'users', user.uid);
+    const userDocRef = doc(db, "users", user.uid);
     const userDocSnap = await getDoc(userDocRef);
 
     if (userDocSnap.exists()) {
@@ -173,52 +235,60 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     lastName: string,
     grade: string,
     skillLevel: string,
-    skills: { webDevSkill: string, gameDevSkill: string, aiSkill: string }
+    skills: { webDevSkill: string; gameDevSkill: string; aiSkill: string },
   ) => {
-      console.log("signUp function started");
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      console.log("User created in Firebase Auth:", userCredential.user.uid);
-      const currentUser = userCredential.user;
-      await updateProfile(currentUser, { displayName: username });
-      console.log("Firebase Auth profile updated with username:", username);
-      await setDoc(doc(db, 'users', currentUser.uid), {
-          email: currentUser.email,
-          role: 'student',
-          createdAt: new Date(),
-          username: username,
-      });
-      console.log("User document created in Firestore 'users' collection");
-      await setDoc(doc(db, 'public_profiles', currentUser.uid), {
-          username: username,
-          email: currentUser.email,
-          role: 'student',
-          uid: currentUser.uid,
-          firstName: firstName,
-          lastName: lastName,
-          grade: grade,
-          skillLevel: skillLevel,
-          ...skills, // Spread the new skills object here
-      });
-      console.log("Public profile document created in Firestore 'public_profiles' collection");
-      await setDoc(doc(db, 'applications', currentUser.uid), {
-          email: currentUser.email,
-          username: username,
-          firstName: firstName,
-          lastName: lastName,
-          grade: grade,
-          skillLevel: skillLevel,
-          ...skills, // Spread the new skills object here
-      });
-      console.log("Application document created in Firestore 'applications' collection");
-      await sendEmailVerification(currentUser);
-      console.log("Verification email sent.");
-      await signOut(auth);
-      console.log("User signed out pending email verification.");
+    console.log("signUp function started");
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password,
+    );
+    console.log("User created in Firebase Auth:", userCredential.user.uid);
+    const currentUser = userCredential.user;
+    await updateProfile(currentUser, { displayName: username });
+    console.log("Firebase Auth profile updated with username:", username);
+    await setDoc(doc(db, "users", currentUser.uid), {
+      email: currentUser.email,
+      role: "student",
+      createdAt: new Date(),
+      username: username,
+    });
+    console.log("User document created in Firestore 'users' collection");
+    await setDoc(doc(db, "public_profiles", currentUser.uid), {
+      username: username,
+      email: currentUser.email,
+      role: "student",
+      uid: currentUser.uid,
+      firstName: firstName,
+      lastName: lastName,
+      grade: grade,
+      skillLevel: skillLevel,
+      ...skills, // Spread the new skills object here
+    });
+    console.log(
+      "Public profile document created in Firestore 'public_profiles' collection",
+    );
+    await setDoc(doc(db, "applications", currentUser.uid), {
+      email: currentUser.email,
+      username: username,
+      firstName: firstName,
+      lastName: lastName,
+      grade: grade,
+      skillLevel: skillLevel,
+      ...skills, // Spread the new skills object here
+    });
+    console.log(
+      "Application document created in Firestore 'applications' collection",
+    );
+    await sendEmailVerification(currentUser);
+    console.log("Verification email sent.");
+    await signOut(auth);
+    console.log("User signed out pending email verification.");
   };
 
   const logOut = async () => {
     await signOut(auth);
-    window.location.href = '/';
+    window.location.href = "/";
   };
 
   const value = {
@@ -240,7 +310,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

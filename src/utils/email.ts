@@ -8,7 +8,10 @@ import { getAuth, User } from "firebase/auth";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-const sendEmail = async (emailType: string, formData: object): Promise<boolean> => {
+const sendEmail = async (
+  emailType: string,
+  formData: object,
+): Promise<boolean> => {
   try {
     const auth = getAuth();
     const user: User | null = auth.currentUser;
@@ -37,13 +40,13 @@ const sendEmail = async (emailType: string, formData: object): Promise<boolean> 
     }
 
     // You need to replace this with your actual Cloud Function URL
-    const backendUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}${endpoint}`; 
+    const backendUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}${endpoint}`;
 
     const response = await fetch(backendUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${idToken}`, 
+        Authorization: `Bearer ${idToken}`,
       },
       body: JSON.stringify(formData),
     });
