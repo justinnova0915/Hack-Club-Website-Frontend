@@ -196,14 +196,16 @@ export default function HomePage() {
     if (isMobile) {
       return (
         <img
-          src="/images/spline-static.png"
+          src="/images/landing-page-static.png"
           alt="A static image for the hack club landing page"
-          style={{ height: '100%', width: 'auto', objectFit: "cover", filter: 'brightness(0.6)' }}
+          style={{ width: '100%', height: 'auto' }}
         />
       );
     }
 
-    return 1
+    return (
+      <Spline scene="https://prod.spline.design/3NPKYl3afLrrLI0m/scene.splinecode" />
+    );
   };
 
   return (
