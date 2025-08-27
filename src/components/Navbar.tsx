@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
+import logo from "@/../public/images/logo-dark.png";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
@@ -37,14 +39,22 @@ export default function Navbar() {
               href="/dashboard"
               className="text-xl sm:text-3xl font-bold text-[var(--color-accent-blue)]"
             >
-              Hack Club
+              <Image
+                src={logo}
+                alt="Hack Club Logo"
+                className="h-auto w-auto max-h-12 sm:max-h-16"
+              />
             </Link>
           ) : (
             <Link
               href="/"
               className="text-xl sm:text-3xl font-bold text-[var(--color-accent-blue)]"
             >
-              Hack Club
+              <Image
+                src={logo}
+                alt="Hack Club Logo"
+                className="h-auto w-auto max-h-12 sm:max-h-16"
+              />
             </Link>
           )}
         </div>

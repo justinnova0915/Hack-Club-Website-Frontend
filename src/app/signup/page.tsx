@@ -19,6 +19,7 @@ import {
   Code,
   Lightbulb,
   Send,
+  GitPullRequest,
 } from "lucide-react";
 import { sendEmail } from "@/utils/email";
 
@@ -34,6 +35,7 @@ export default function SignUpPage() {
   const [webDevSkill, setWebDevSkill] = useState("");
   const [gameDevSkill, setGameDevSkill] = useState("");
   const [aiSkill, setAiSkill] = useState("");
+  const [gitSkill, setGitSkill] = useState("");
 
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [step, setStep] = useState(1);
@@ -54,6 +56,7 @@ export default function SignUpPage() {
   const [webDevSkillError, setWebDevSkillError] = useState("");
   const [gameDevSkillError, setGameDevSkillError] = useState("");
   const [aiSkillError, setAiSkillError] = useState("");
+  const [gitSkillError, setGitSkillError] = useState("");
   const [showTerminal, setShowTerminal] = useState(false);
   const [terminalMessages, setTerminalMessages] = useState<string[]>([]);
   const [typedMessage, setTypedMessage] = useState("");
@@ -148,6 +151,9 @@ export default function SignUpPage() {
       case "aiSkill":
         setAiSkillError(aiSkill.trim() === "" ? "This field is required." : "");
         break;
+      case "gitSkill":
+        setGitSkillError(gitSkill.trim() === "" ? "This field is required." : "");
+        break;
       default:
         break;
     }
@@ -176,7 +182,8 @@ export default function SignUpPage() {
         return (
           webDevSkill.trim() !== "" &&
           gameDevSkill.trim() !== "" &&
-          aiSkill.trim() !== ""
+          aiSkill.trim() !== "" &&
+          gitSkill.trim() !== ""
         );
       default:
         return true;
@@ -213,6 +220,7 @@ export default function SignUpPage() {
           handleValidation("webDevSkill");
           handleValidation("gameDevSkill");
           handleValidation("aiSkill");
+          handleValidation("gitSkill");
           break;
         default:
           break;
@@ -320,7 +328,7 @@ export default function SignUpPage() {
         lastName,
         grade,
         skillLevel,
-        { webDevSkill, gameDevSkill, aiSkill },
+        { webDevSkill, gameDevSkill, aiSkill, gitSkill },
       );
       console.log("signUp function completed successfully");
 
@@ -378,7 +386,7 @@ export default function SignUpPage() {
     {
       id: 5,
       name: "Academic Info",
-      description: "Tell us a bit about your school.",
+      description: "Tell us a bit about you.",
       icon: GraduationCap,
     },
     {
@@ -940,6 +948,59 @@ export default function SignUpPage() {
                   </p>
                 )}
               </div>
+              {/* Git & GitHub Dropdown */}
+              <div className="relative">
+                <label
+                  className="block text-gray-300 text-lg font-semibold mb-3"
+                  htmlFor="gitSkill"
+                >
+                  Git & GitHub
+                </label>
+                <div className="relative flex items-center">
+                  <select
+                    className={`w-full pl-14 pr-8 py-4 bg-gray-600 rounded-lg text-white text-xl focus:outline-none transition duration-200 border-2 appearance-none ${gitSkillError ? "border-red-500" : "border-gray-500"} focus:border-indigo-500 focus:ring-indigo-500`}
+                    id="gitSkill"
+                    value={gitSkill}
+                    onChange={(e) => setGitSkill(e.target.value)}
+                    onBlur={() => handleValidation("gitSkill")}
+                    required
+                  >
+                    {skillOptions.map((option) => (
+                      <option
+                        key={option.value}
+                        value={option.value}
+                        disabled={option.value === ""}
+                        hidden={option.value === ""}
+                      >
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <GitPullRequest
+                    className="absolute left-5 text-gray-400"
+                    size={24}
+                  />
+                  <div className="absolute right-5 text-gray-400 pointer-events-none">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                {gitSkillError && (
+                  <p className="text-red-400 text-sm italic mt-2">
+                    {gitSkillError}
+                  </p>
+                )}
+              </div>
             </div>
           </>
         );
@@ -1121,7 +1182,7 @@ export default function SignUpPage() {
               </div>
 
               {step < 7 && !showTerminal && (
-                <div className="flex justify-between items-center mt-10">
+                <div className="flex flex-col sm:flex-row justify-between items-center mt-10 gap-y-4">
                   <Link
                     href="/login"
                     className="font-bold text-lg text-indigo-400 hover:text-indigo-300 transition duration-200"

@@ -28,6 +28,7 @@ interface CustomUser extends User {
   webDevSkill?: string;
   gameDevSkill?: string;
   aiSkill?: string;
+  gitSkill?: string; // Added the new gitSkill property
   getIdToken: (forceRefresh?: boolean) => Promise<string>;
 }
 
@@ -43,7 +44,7 @@ interface AuthContextType {
     lastName: string,
     grade: string,
     skillLevel: string,
-    skills: { webDevSkill: string; gameDevSkill: string; aiSkill: string },
+    skills: { webDevSkill: string; gameDevSkill: string; aiSkill: string; gitSkill: string }, // Updated skills object type
   ) => Promise<void>;
   logOut: () => Promise<void>;
   userRole: "student" | "mentor" | "admin" | null;
@@ -87,6 +88,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               webDevSkill: "",
               gameDevSkill: "",
               aiSkill: "",
+              gitSkill: "", // Added to default user doc
             },
             { merge: true },
           );
@@ -101,6 +103,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             webDevSkill: "",
             gameDevSkill: "",
             aiSkill: "",
+            gitSkill: "", // Added to default fetched data
           };
           console.log("Created missing user document in 'users' collection.");
         }
@@ -135,6 +138,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const currentAiSkill = publicProfileSnap.exists()
           ? publicProfileSnap.data().aiSkill
           : fetchedUserData.aiSkill || "";
+        const currentGitSkill = publicProfileSnap.exists()
+          ? publicProfileSnap.data().gitSkill
+          : fetchedUserData.gitSkill || ""; // Added gitSkill
         const currentEmail = publicProfileSnap.exists()
           ? publicProfileSnap.data().email
           : fetchedUserData.email || currentUser.email || "";
@@ -150,7 +156,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           publicProfileSnap.data().skillLevel !== currentSkillLevel ||
           publicProfileSnap.data().webDevSkill !== currentWebDevSkill ||
           publicProfileSnap.data().gameDevSkill !== currentGameDevSkill ||
-          publicProfileSnap.data().aiSkill !== currentAiSkill
+          publicProfileSnap.data().aiSkill !== currentAiSkill ||
+          publicProfileSnap.data().gitSkill !== currentGitSkill
         ) {
           await setDoc(
             publicProfileRef,
@@ -166,6 +173,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               webDevSkill: currentWebDevSkill,
               gameDevSkill: currentGameDevSkill,
               aiSkill: currentAiSkill,
+              gitSkill: currentGitSkill,
             },
             { merge: true },
           );
@@ -181,6 +189,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           webDevSkill: currentWebDevSkill,
           gameDevSkill: currentGameDevSkill,
           aiSkill: currentAiSkill,
+          gitSkill: currentGitSkill, // Added to augmented user
           getIdToken: currentUser.getIdToken.bind(currentUser),
         };
 
@@ -221,6 +230,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         webDevSkill: userData.webDevSkill,
         gameDevSkill: userData.gameDevSkill,
         aiSkill: userData.aiSkill,
+        gitSkill: userData.gitSkill, // Added gitSkill
       };
     }
 
@@ -235,7 +245,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     lastName: string,
     grade: string,
     skillLevel: string,
-    skills: { webDevSkill: string; gameDevSkill: string; aiSkill: string },
+    skills: { webDevSkill: string; gameDevSkill: string; aiSkill: string; gitSkill: string },
   ) => {
     console.log("signUp function started");
     const userCredential = await createUserWithEmailAndPassword(
@@ -247,35 +257,37 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const currentUser = userCredential.user;
     await updateProfile(currentUser, { displayName: username });
     console.log("Firebase Auth profile updated with username:", username);
+
+    // Save to the users database
     await setDoc(doc(db, "users", currentUser.uid), {
-      email: currentUser.email,
+      email,
+      username,
       role: "student",
-      createdAt: new Date(),
-      username: username,
     });
     console.log("User document created in Firestore 'users' collection");
+    
+    // Save to the public_profiles database
     await setDoc(doc(db, "public_profiles", currentUser.uid), {
-      username: username,
-      email: currentUser.email,
+      email,
+      firstName,
+      lastName,
+      grade,
       role: "student",
       uid: currentUser.uid,
-      firstName: firstName,
-      lastName: lastName,
-      grade: grade,
-      skillLevel: skillLevel,
-      ...skills, // Spread the new skills object here
+      username,
     });
     console.log(
       "Public profile document created in Firestore 'public_profiles' collection",
     );
+    
+    // Save to the applications database
     await setDoc(doc(db, "applications", currentUser.uid), {
-      email: currentUser.email,
-      username: username,
-      firstName: firstName,
-      lastName: lastName,
-      grade: grade,
-      skillLevel: skillLevel,
-      ...skills, // Spread the new skills object here
+      email,
+      firstName,
+      grade,
+      lastName,
+      skillLevel,
+      username,
     });
     console.log(
       "Application document created in Firestore 'applications' collection",

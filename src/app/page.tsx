@@ -57,6 +57,7 @@ export default function HomePage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [selectedLearnSection, setSelectedLearnSection] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const CUSTOM_BREAKPOINT = 870;
   useEffect(() => {
     const handleResize = () => {
@@ -179,12 +180,38 @@ export default function HomePage() {
     );
   }
 
+  const SplineAnimation = () => {
+
+    useEffect(() => {
+      const userAgent = navigator.userAgent;
+
+      // Use a single, comprehensive regex for mobile detection.
+      const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+
+      if (mobileRegex.test(userAgent)) {
+        setIsMobile(true);
+      }
+    }, []);
+
+    if (isMobile) {
+      return (
+        <img
+          src="/images/spline-static.png"
+          alt="A static image for the hack club landing page"
+          style={{ height: '100%', width: 'auto', objectFit: "cover", filter: 'brightness(0.6)' }}
+        />
+      );
+    }
+
+    return 1
+  };
+
   return (
     <div className="min-h-screen bg-[var(--color-primary-dark)] text-[var(--color-primary-light)] flex flex-col relative">
       <main className="flex-grow">
         <section className="relative min-h-screen flex overflow-hidden pt-32 pb-16">
           <div className="absolute top-0 left-0 w-full h-full z-0">
-            <Spline scene="https://prod.spline.design/3NPKYl3afLrrLI0m/scene.splinecode" />
+            <SplineAnimation />
           </div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -199,7 +226,7 @@ export default function HomePage() {
                 transition={{ duration: 0.8, delay: 0.2 }}
                 className="text-4xl md:text-6xl font-black text-white leading-tight mb-4"
               >
-                Welcome to <span className="gradient-text">Hack Club VMSS</span>
+                Welcome to <span className={isMobile ? "text-white" : "gradient-text"}>Hack Club VMSS</span>
                 !
               </motion.h1>
               <motion.p
@@ -484,10 +511,14 @@ export default function HomePage() {
                   <AnimatePresence>
                     {openFaq === index && (
                       <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3 }}
+                        initial="collapsed"
+                        animate="open"
+                        exit="collapsed"
+                        variants={{
+                          open: { opacity: 1, height: "auto" },
+                          collapsed: { opacity: 0, height: 0 }
+                        }}
+                        transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
                       >
                         <p className="p-6 pt-0 text-gray-400 text-base">
                           {faq.answer}
