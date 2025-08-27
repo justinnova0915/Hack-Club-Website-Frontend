@@ -1,5 +1,6 @@
 "use client";
 
+//trigger redeployment
 import { useEffect, useState } from "react";
 import "./globals.css";
 import Link from "next/link";
