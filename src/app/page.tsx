@@ -137,7 +137,7 @@ export default function HomePage() {
       image: "https://placehold.co/150x150/2d3748/ffffff?text=Mentor+1",
     },
     {
-      name: "Neel Dave",
+      name: "NeelDave",
       title: "Club Co-President",
       grade: "11th Grade",
       bio: "[placeholder bio for Neel Dave]",
