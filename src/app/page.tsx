@@ -150,7 +150,7 @@ export default function HomePage() {
       title: "Software Mentor",
       grade: "10th Grade",
       bio: "An expert in PyTorch, web dev, and game development. Justin loves to make websites using react and next.js like this one!",
-      image: "https://placehold.co/150x150/2d3748/ffffff?text=Mentor+3",
+      image: "/images/justin.jpg",
     },
     {
       name: "Ricky Liu",
