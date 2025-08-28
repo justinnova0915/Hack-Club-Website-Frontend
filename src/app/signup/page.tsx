@@ -239,11 +239,7 @@ export default function SignUpPage() {
   const compilationSteps = useMemo(
     () => [
       "> Initializing Hack Club registration protocols...",
-      "> Verifying credentials... [ OK ]",
       `> Compiling user profile '${username.toLowerCase()}.hcu'...`,
-      "> Establishing secure connection to Hack Club central registry...",
-      "> Creating new user document ... [ SUCCESS ]",
-      "> Assigning Hack Club ID: HC-7392-L5B...",
       "> Sending verification email to your address...",
       "> Registration complete. Please check your inbox to verify your account.",
     ],
@@ -332,19 +328,19 @@ export default function SignUpPage() {
       );
       console.log("signUp function completed successfully");
 
-      // Call the sendEmail function to send a welcome email
-      setIsSendingEmail(true);
-      console.log("Attempting to send welcome email...");
-      const emailSent = await sendEmail("welcome", {
-        email: email,
-        name: firstName,
-      });
+      // // Call the sendEmail function to send a welcome email
+      // setIsSendingEmail(true);
+      // console.log("Attempting to send welcome email...");
+      // const emailSent = await sendEmail("welcome", {
+      //   email: email,
+      //   name: firstName,
+      // });
 
-      if (emailSent) {
-        console.log("Welcome email sent successfully.");
-      } else {
-        console.error("Failed to send welcome email.");
-      }
+      // if (emailSent) {
+      //   console.log("Welcome email sent successfully.");
+      // } else {
+      //   console.error("Failed to send welcome email.");
+      // }
       setIsSendingEmail(false);
     } catch (err: any) {
       console.error("Error during signup:", err.message);
