@@ -287,7 +287,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       grade,
       lastName,
       skillLevel,
-      username,
+      skills
     });
     console.log(
       "Application document created in Firestore 'applications' collection",
