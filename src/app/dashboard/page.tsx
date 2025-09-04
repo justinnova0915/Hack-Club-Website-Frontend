@@ -19,6 +19,7 @@ import {
   setDoc,
   updateDoc,
 } from "firebase/firestore";
+
 interface Event {
   id: string;
   title: string;
@@ -45,6 +46,59 @@ interface Conversation {
   lastMessageSenderId: string;
   isUnread: boolean;
 }
+
+const DiscordBanner = () => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const bannerStorageKey = 'discordBannerClosed';
+    if (!localStorage.getItem(bannerStorageKey)) {
+      setIsVisible(true);
+    }
+  }, []);
+
+  const handleClose = () => {
+    setIsVisible(false);
+    localStorage.setItem('discordBannerClosed', 'true');
+  };
+
+  return (
+    <>
+      {isVisible && (
+        <div className="discord-banner fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-gradient-to-br from-[#5865F2] to-[#7289da] text-white p-4 sm:p-6 rounded-xl shadow-lg flex flex-col sm:flex-row items-center justify-between w-[50%] transition-all duration-300 ease-in-out">
+          <div className="flex items-center w-full sm:w-auto mb-4 sm:mb-0">
+            <img
+              src="https://static.vecteezy.com/system/resources/previews/006/892/625/non_2x/discord-logo-icon-editorial-free-vector.jpg"
+              alt="Discord Logo"
+              className="w-10 h-10 sm:w-12 sm:h-12 mr-4"
+            />
+            <div className="flex flex-col text-left">
+              <span className="font-semibold text-lg sm:text-xl">Join Our Discord!</span>
+              <span className="text-xs sm:text-sm opacity-80">Connect with fellow hackers and get help.</span>
+            </div>
+          </div>
+          <div className="flex items-center w-full sm:w-auto mt-4 sm:mt-0 sm:ml-6 justify-end">
+            <a
+              href="https://discord.gg/EuReWqEbVS"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white text-[#5865F2] font-bold py-2 px-6 rounded-full transition-all duration-200 hover:scale-105 shadow-md"
+            >
+              Join Now
+            </a>
+            <button
+              onClick={handleClose}
+              className="text-white ml-4 text-2xl opacity-70 hover:opacity-100 transition-opacity duration-200"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
 export default function DashboardPage() {
   const { user, loading, userRole, logOut } = useAuth();
   const router = useRouter();
@@ -507,6 +561,7 @@ export default function DashboardPage() {
           </div>
         </div>
       </main>
+      <DiscordBanner />
     </div>
   );
 }
