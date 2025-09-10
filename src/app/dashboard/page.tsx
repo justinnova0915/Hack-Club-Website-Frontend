@@ -79,7 +79,7 @@ const DiscordBanner = () => {
           </div>
           <div className="flex items-center w-full sm:w-auto mt-4 sm:mt-0 sm:ml-6 justify-end">
             <a
-              href="https://discord.gg/EuReWqEbVS"
+              href="https://discord.gg/YTxrhr6KXN"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-white text-[#5865F2] font-bold py-2 px-6 rounded-full transition-all duration-200 hover:scale-105 shadow-md"
